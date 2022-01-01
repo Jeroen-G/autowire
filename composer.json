@@ -1,0 +1,42 @@
+{
+    "name": "jeroen-g/autowire",
+    "description": "Autowire interfaces to implementations using PHP 8 Attributes.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jeroen",
+            "email": "jeroengjeroeng@gmail.com",
+            "homepage": "https://jeroeng.dev"
+        }
+    ],
+    "homepage": "https://github.com/jeroen-g/autowire",
+    "keywords": ["Laravel", "autowire"],
+    "require": {
+        "php": "8.0.*||8.1.*",
+        "ergebnis/classy": "^1.3",
+        "illuminate/support": "~8.0||~9.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~9.0",
+        "mockery/mockery": "^1.4",
+        "infection/infection": "^0.25",
+        "symplify/easy-coding-standard": "^9.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "JeroenG\\Autowire\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "JeroenG\\Autowire\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "JeroenG\\Autowire\\AutowireServiceProvider"
+            ]
+        }
+    }
+}
