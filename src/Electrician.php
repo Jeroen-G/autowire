@@ -6,6 +6,7 @@ namespace JeroenG\Autowire;
 
 use Ergebnis\Classy\Constructs;
 use JeroenG\Autowire\Attribute\Autowire as AutowireAttribute;
+use JeroenG\Autowire\Exception\FaultyWiringException;
 
 final class Electrician
 {
@@ -41,6 +42,6 @@ final class Electrician
             }
         }
 
-        throw new \Exception("No implementation found for $interface");
+        throw FaultyWiringException::implementationNotFoundFor($interface);
     }
 }
