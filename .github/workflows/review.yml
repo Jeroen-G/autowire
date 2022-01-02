@@ -26,8 +26,8 @@ jobs:
 
       - name: Install dependencies
         run: composer update --prefer-dist --no-suggest --no-interaction --no-scripts
-#
-#      - name: Run Infection for added and modified files only
-#        run: |
-#          git fetch --depth=1 origin $GITHUB_BASE_REF
-#          php vendor/bin/infection -j2 --git-diff-filter=AM --logger-github
+
+      - name: Run Infection for added and modified files only
+        run: |
+          git fetch --depth=1 origin $GITHUB_BASE_REF
+          php vendor/bin/infection -j2 --git-diff-filter=AM --logger-github
