@@ -14,7 +14,8 @@
     "require": {
         "php": "8.0.*||8.1.*",
         "ergebnis/classy": "^1.3",
-        "illuminate/support": "~8.0||~9.0"
+        "illuminate/support": "~8.0||~9.0",
+        "webmozart/assert": "^1.10"
     },
     "require-dev": {
         "phpunit/phpunit": "~9.0",

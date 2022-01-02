@@ -21,6 +21,8 @@ php artisan vendor:publish --tag=autowire.config
 
 ## Usage
 
+### Autowiring
+
 Are you tired of binding abstract interfaces to concrete classes all the time?
 
 ```php
@@ -60,7 +62,51 @@ class WorldClass implements HelloInterface
 The Autowire package will crawl through the classes and bind the abstract interface to the concrete class.
 If there already is a binding in the container it will skip the autowiring.
 
-### Configuration
+### Configure
+
+Personally I like injection of dependencies over resolving them using `make()` helpers.
+However, that means writing binding definitions such as:
+
+```php
+$this->app->when($x)->needs($y)->give($z);
+```
+
+Not anymore with the Configure attribute!
+Here is the WorldClass example again:
+
+```php
+namespace App;
+
+use App\Contracts\HelloInterface;
+
+#[Configure(['$message' => 'world'])]
+class WorldClass
+{
+    private $message;
+
+    public function __construct($message)
+    {
+        $this->message = $message;
+    }
+}
+```
+
+In this example message is a simple string.
+However, it can be a reference to a configuration value or other class too!
+The notations of config and service definitions is the same as used in Symfony. 
+
+```php
+// Will get the value set in config/app.php
+#[Configure(['$message' => '%app.message%'])]
+
+// Will inject an instance of the Message class
+#[Configure(['$message' => '@App\Domain\Message'])]
+
+// When you have multiple constructor arguments
+#[Configure(['$message' => '%app.message%', '$logger' => '@Psr\Log\LoggerInterface'])]
+```
+
+## Configuration
 
 The package's configuration can be found in `config/autowire.php`.
 It should contain the list of directories where Autowire should look for both interfaces and implementations. 

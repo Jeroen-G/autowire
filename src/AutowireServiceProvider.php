@@ -22,9 +22,29 @@ class AutowireServiceProvider extends ServiceProvider
         $crawler = Crawler::in(config('autowire.directories'));
         $electrician = new Electrician($crawler);
 
-        $wires = $crawler->filter(fn(string $name) => $electrician->canAutowire($name))->classNames();
+        $autowires = $crawler->filter(fn(string $name) => $electrician->canAutowire($name))->classNames();
+        $configures = $crawler->filter(fn(string $name) => $electrician->canConfigure($name))->classNames();
 
-        foreach ($wires as $interface) {
+        foreach ($configures as $implementation) {
+            $configuration = $electrician->configure($implementation);
+
+            foreach ($configuration->definitions as $definition) {
+                switch ($definition->type) {
+                    case ConfigurationType::CONFIG:
+                        $this->app->when($implementation)->needs($definition->need)->giveConfig($definition->give);
+                        break;
+                    case ConfigurationType::SERVICE:
+                        $give = $this->app->make($definition->give);
+                        $this->app->when($implementation)->needs($definition->need)->give($give);
+                        break;
+                    case ConfigurationType::UNKNOWN:
+                    default:
+                        $this->app->when($implementation)->needs($definition->need)->give($definition->give);
+                }
+            }
+        }
+
+        foreach ($autowires as $interface) {
             $wire = $electrician->connect($interface);
             $this->app->bindIf($wire->interface, $wire->implementation);
         }
