@@ -54,20 +54,18 @@ final class Electrician
 
     public function canAutowire(string $name): bool
     {
-        $reflectionClass = new \ReflectionClass($name);
-        $attributes = $reflectionClass->getAttributes(AutowireAttribute::class);
-
-        if (empty($attributes)) {
-            return false;
-        }
-
-        return true;
+        return $this->classHasAttribute($name, AutowireAttribute::class);
     }
 
     public function canConfigure(string $name): bool
     {
-        $reflectionClass = new \ReflectionClass($name);
-        $attributes = $reflectionClass->getAttributes(ConfigureAttribute::class);
+        return $this->classHasAttribute($name, ConfigureAttribute::class);
+    }
+
+    private function classHasAttribute(string $className, string $attributeName): bool
+    {
+        $reflectionClass = new \ReflectionClass($className);
+        $attributes = $reflectionClass->getAttributes($attributeName);
 
         if (empty($attributes)) {
             return false;
