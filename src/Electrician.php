@@ -29,7 +29,7 @@ final class Electrician
         $configurations = [];
 
         if (empty($attributes)) {
-            throw new FaultyWiringException('oops');
+            throw FaultyWiringException::classHasNoAttribute($implementation, ConfigureAttribute::class);
         }
 
         foreach ($attributes as $attribute) {

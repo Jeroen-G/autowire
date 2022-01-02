@@ -10,4 +10,9 @@ final class FaultyWiringException extends \RuntimeException
     {
         return new self("No implementation found for $interface");
     }
+
+    public static function classHasNoAttribute(string $class, string $attribute): self
+    {
+        return new self("No $attribute found in $class");
+    }
 }
