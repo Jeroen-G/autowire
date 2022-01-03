@@ -3,7 +3,7 @@
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![CI][ico-actions]][link-actions]
 
-Autowire interfaces to implementations using PHP 8 Attributes.
+Autowire and configure using PHP 8 Attributes in Laravel.
 
 ## Installation
 
