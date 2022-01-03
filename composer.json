@@ -1,6 +1,6 @@
 {
     "name": "jeroen-g/autowire",
-    "description": "Autowire interfaces to implementations using PHP 8 Attributes.",
+    "description": "Autowire and configure using PHP 8 Attributes in Laravel.",
     "license": "MIT",
     "authors": [
         {
