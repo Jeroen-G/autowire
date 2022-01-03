@@ -45,7 +45,7 @@ final class Electrician
             }
 
             foreach ($instance->getDefinitions() as $need => $give) {
-                $configurations[] = new ConfigurationValue($need, $give, ConfigurationType::SERVICE);
+                $configurations[] = new ConfigurationValue($need, $give, ConfigurationType::UNKNOWN);
             }
         }
 

@@ -11,4 +11,6 @@ final class SubjectDirectory
     public const CONTRACTS = __DIR__.'/Subject/Contracts';
 
     public const DOMAIN = __DIR__.'/Subject/Domain';
+
+    public const GREETINGS = __DIR__.'/Subject/Domain/Greeting';
 }
