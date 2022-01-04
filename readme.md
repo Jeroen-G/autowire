@@ -1,4 +1,4 @@
-#🔌 Autowire for Laravel
+# 🔌 Autowire for Laravel
 
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![CI][ico-actions]][link-actions]
