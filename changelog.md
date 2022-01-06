@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [1.3.0]
+
+## Changed
+- Cache is now saves as a PHP file instead of JSON
+
 ## [1.2.0]
 
 ### Added

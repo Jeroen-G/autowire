@@ -16,7 +16,7 @@ class AutowireClearCommand extends Command
 
     public function handle(): int
     {
-        $deleted = File::delete(App::bootstrapPath('cache/autowire.json'));
+        $deleted = File::delete(App::bootstrapPath('cache/autowire.php'));
 
         if (!$deleted) {
             $this->error('Could not clear cache.');
