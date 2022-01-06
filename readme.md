@@ -106,6 +106,12 @@ The notations of config and service definitions is the same as used in Symfony.
 #[Configure(['$message' => '%app.message%', '$logger' => '@Psr\Log\LoggerInterface'])]
 ```
 
+### Caching
+
+The autowiring and configuration can be cached with the command `php artisan autowire:cache`.
+In a similar fashion it can be cleared with `php artisan autowire:clear`.
+Keep in mind that caching means that it won't crawl all the classes and changes to the annotations will not be loaded.
+
 ## Configuration
 
 The package's configuration can be found in `config/autowire.php`.
