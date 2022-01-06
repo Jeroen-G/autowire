@@ -26,8 +26,7 @@ class AutowireServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/autowire.php', 'autowire');
 
         try {
-            $file = File::get(App::bootstrapPath('cache/autowire.json'));
-            $cache = json_decode($file, true, 512, JSON_THROW_ON_ERROR);
+            $cache = File::getRequire(App::bootstrapPath('cache/autowire.php'));
             $this->loadFromCache($cache);
         } catch (FileNotFoundException | JsonException) {
             $this->crawlAndLoad();
