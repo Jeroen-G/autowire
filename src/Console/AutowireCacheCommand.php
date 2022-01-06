@@ -48,6 +48,7 @@ class AutowireCacheCommand extends Command
 
         File::put(App::bootstrapPath('cache/autowire.json'), json_encode($cache, JSON_THROW_ON_ERROR));
 
+        $this->info('Autowire cache created!');
         return 0;
     }
 }
