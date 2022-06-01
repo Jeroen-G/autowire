@@ -65,7 +65,7 @@ final class Electrician
     private function classHasAttribute(string $className, string $attributeName): bool
     {
         $reflectionClass = new \ReflectionClass($className);
-        $attributes = $reflectionClass->getAttributes($attributeName);
+        $attributes = $reflectionClass->getAttributes($attributeName, \ReflectionAttribute::IS_INSTANCEOF);
 
         if (empty($attributes)) {
             return false;
