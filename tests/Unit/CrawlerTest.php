@@ -7,10 +7,13 @@ namespace JeroenG\Autowire\Tests\Unit;
 use JeroenG\Autowire\Crawler;
 use JeroenG\Autowire\Tests\Support\Subject\Contracts\GoodbyeInterface;
 use JeroenG\Autowire\Tests\Support\Subject\Contracts\HelloInterface;
+use JeroenG\Autowire\Tests\Support\Subject\Contracts\HowDoYouDoInterface;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\ClassGreeting;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\ConfigGreeting;
+use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\CustomGreeting;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\TextGreeting;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\MarsClass;
+use JeroenG\Autowire\Tests\Support\Subject\Domain\MoonClass;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\WorldClass;
 use JeroenG\Autowire\Tests\Support\SubjectDirectory;
 use PHPUnit\Framework\TestCase;
@@ -24,14 +27,17 @@ final class CrawlerTest extends TestCase
         $expected = [
             GoodbyeInterface::class,
             HelloInterface::class,
+            HowDoYouDoInterface::class,
             ClassGreeting::class,
             ConfigGreeting::class,
+            CustomGreeting::class,
             TextGreeting::class,
             MarsClass::class,
+            MoonClass::class,
             WorldClass::class,
         ];
 
-        self::assertEquals($expected, $crawler->classNames());
+        self::assertEqualsCanonicalizing($expected, $crawler->classNames());
     }
 
     public function test_it_can_filter(): void
@@ -42,10 +48,12 @@ final class CrawlerTest extends TestCase
         $expected = [
             GoodbyeInterface::class,
             HelloInterface::class,
+            HowDoYouDoInterface::class,
             MarsClass::class,
+            MoonClass::class,
             WorldClass::class,
         ];
 
-        self::assertEquals($expected, array_values($crawler->classNames()));
+        self::assertEqualsCanonicalizing($expected, array_values($crawler->classNames()));
     }
 }

@@ -117,6 +117,13 @@ Keep in mind that caching means that it won't crawl all the classes and changes 
 The package's configuration can be found in `config/autowire.php`.
 It should contain the list of directories where Autowire should look for both interfaces and implementations. 
 
+## Custom attributes
+
+It is possible to use custom Attribute classes for either or both the autowiring or configuration functionality:
+- Create a custom attribute class, making sure to implement either `JeroenG\Autowire\Attribute\AutowireInterface` or `JeroenG\Autowire\Attribute\ConfigureInterface`, depending on the attribute you want to replace.
+- Add a `autowire_attribute` or `configure_attribute` setting to the `config/autowire.php` file, containing the fully-namespaced name of your custom attribute class.
+- Use your custom attribute to mark the interface or class you want to autowire or configure.
+
 ## Changelog
 
 Please see the [changelog](changelog.md) for more information on what has changed recently.
