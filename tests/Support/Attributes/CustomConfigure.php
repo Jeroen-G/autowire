@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-namespace JeroenG\Autowire\Attribute;
+namespace JeroenG\Autowire\Tests\Support\Attributes;
 
 use Attribute;
+use JeroenG\Autowire\Attribute\ConfigureInterface;
 
 #[Attribute(Attribute::TARGET_CLASS)]
-final class Configure implements ConfigureInterface
+class CustomConfigure implements ConfigureInterface
 {
     private array $configs = [];
 

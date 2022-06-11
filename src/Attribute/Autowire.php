@@ -7,6 +7,6 @@ namespace JeroenG\Autowire\Attribute;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_CLASS)]
-final class Autowire
+final class Autowire implements AutowireInterface
 {
 }

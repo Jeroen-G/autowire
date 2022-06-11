@@ -9,11 +9,16 @@ use JeroenG\Autowire\ConfigurationValue;
 use JeroenG\Autowire\Crawler;
 use JeroenG\Autowire\Electrician;
 use JeroenG\Autowire\Exception\FaultyWiringException;
+use JeroenG\Autowire\Tests\Support\Attributes\CustomAutowire;
+use JeroenG\Autowire\Tests\Support\Attributes\CustomConfigure;
 use JeroenG\Autowire\Tests\Support\Subject\Contracts\GoodbyeInterface;
 use JeroenG\Autowire\Tests\Support\Subject\Contracts\HelloInterface;
+use JeroenG\Autowire\Tests\Support\Subject\Contracts\HowDoYouDoInterface;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\ClassGreeting;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\ConfigGreeting;
+use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\CustomGreeting;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\TextGreeting;
+use JeroenG\Autowire\Tests\Support\Subject\Domain\MoonClass;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\WorldClass;
 use JeroenG\Autowire\Tests\Support\SubjectDirectory;
 use PHPUnit\Framework\TestCase;
@@ -108,4 +113,46 @@ final class ElectricianTest extends TestCase
         $this->expectExceptionMessage('No JeroenG\Autowire\Attribute\Configure found in '.GoodbyeInterface::class);
         $electrician->configure(GoodbyeInterface::class);
     }
+    
+    public function test_it_can_tell_if_class_has_custom_autowire_attribute(): void
+    {
+        $crawler = Crawler::in([SubjectDirectory::ALL]);
+        $electrician = new Electrician($crawler, CustomAutowire::class);
+
+        self::assertTrue($electrician->canAutowire(HowDoYouDoInterface::class));
+        self::assertFalse($electrician->canAutowire(HelloInterface::class));
+    }
+
+    public function test_it_can_connect_implementation_with_custom_autowire_attribute(): void
+    {
+        $crawler = Crawler::in([SubjectDirectory::ALL]);
+        $electrician = new Electrician($crawler, CustomAutowire::class);
+
+        $wire = $electrician->connect(HowDoYouDoInterface::class);
+
+        self::assertEquals(HowDoYouDoInterface::class, $wire->interface);
+        self::assertEquals(MoonClass::class, $wire->implementation);
+    }
+
+    public function test_it_can_tell_if_class_has_custom_configure_attribute(): void
+    {
+        $crawler = Crawler::in([SubjectDirectory::ALL]);
+        $electrician = new Electrician(crawler: $crawler, configureAttribute: CustomConfigure::class);
+
+        self::assertTrue($electrician->canConfigure(CustomGreeting::class));
+        self::assertFalse($electrician->canConfigure(TextGreeting::class));
+    }
+
+    public function test_it_can_configure_implementation_with_custom_configure_attribute(): void
+    {
+        $crawler = Crawler::in([SubjectDirectory::GREETINGS]);
+        $electrician = new Electrician(crawler: $crawler, configureAttribute: CustomConfigure::class);
+
+        $configuration = $electrician->configure(CustomGreeting::class);
+
+        $expected = [new ConfigurationValue('$greeting', 'Good day to you!', ConfigurationType::UNKNOWN)];
+
+        self::assertEquals(CustomGreeting::class, $configuration->implementation);
+        self::assertEquals($expected, $configuration->definitions);
+    }    
 }
