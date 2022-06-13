@@ -62,13 +62,6 @@ final class Electrician
 
         return new Configuration($implementation, $configurations);
     }
-    
-    private static function assertValidAttributeImplementation(string $className, string $attributeInterface): void
-    {
-        Assert::classExists($className);
-        Assert::notEmpty((new \ReflectionClass($className))->getAttributes(\Attribute::class));
-        Assert::isAOf($className, $attributeInterface, "{$className} : {$attributeInterface}");
-    }
 
     public function canAutowire(string $name): bool
     {
@@ -78,6 +71,13 @@ final class Electrician
     public function canConfigure(string $name): bool
     {
         return $this->classHasAttribute($name, $this->configureAttribute);
+    }
+    
+    private static function assertValidAttributeImplementation(string $className, string $attributeInterface): void
+    {
+        Assert::classExists($className);
+        Assert::notEmpty((new \ReflectionClass($className))->getAttributes(\Attribute::class));
+        Assert::isAOf($className, $attributeInterface, "{$className} : {$attributeInterface}");
     }
 
     private function classHasAttribute(string $className, string $attributeName): bool
