@@ -9,7 +9,7 @@ use JeroenG\Autowire\Attribute\AutowireInterface as AutowireAttributeInterface;
 use JeroenG\Autowire\Attribute\Configure as ConfigureAttribute;
 use JeroenG\Autowire\Attribute\ConfigureInterface as ConfigureAttributeInterface;
 use JeroenG\Autowire\Exception\FaultyWiringException;
-use Webmozart\Assert\Assert;
+use JeroenG\Autowire\Exception\InvalidAttributeException;
 
 final class Electrician
 {
@@ -22,8 +22,8 @@ final class Electrician
         private string $autowireAttribute = AutowireAttribute::class,
         private string $configureAttribute = ConfigureAttribute::class
     ) {        
-        self::assertValidAttributeImplementation($this->autowireAttribute, AutowireAttributeInterface::class);
-        self::assertValidAttributeImplementation($this->configureAttribute, ConfigureAttributeInterface::class);
+        self::checkValidAttributeImplementation($this->autowireAttribute, AutowireAttributeInterface::class);
+        self::checkValidAttributeImplementation($this->configureAttribute, ConfigureAttributeInterface::class);
     }
 
     public function connect(string $interface): Wire
@@ -73,11 +73,22 @@ final class Electrician
         return $this->classHasAttribute($name, $this->configureAttribute);
     }
     
-    private static function assertValidAttributeImplementation(string $className, string $attributeInterface): void
+    /**
+     * @throws InvalidAttributeException
+     */
+    private static function checkValidAttributeImplementation(string $className, string $attributeInterface): void
     {
-        Assert::classExists($className);
-        Assert::notEmpty((new \ReflectionClass($className))->getAttributes(\Attribute::class));
-        Assert::isAOf($className, $attributeInterface, "{$className} : {$attributeInterface}");
+        if (!class_exists($className)) {
+            throw InvalidAttributeException::doesNotExist($className);
+        }
+        
+        if (empty((new \ReflectionClass($className))->getAttributes(\Attribute::class))) {
+            throw InvalidAttributeException::isNotAnAttribute($className);
+        }
+        
+        if (!is_a($className, $attributeInterface, true)) {
+            throw InvalidAttributeException::doesNotImplementInterface($className, $attributeInterface);
+        }
     }
 
     private function classHasAttribute(string $className, string $attributeName): bool
