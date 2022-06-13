@@ -9,6 +9,7 @@ use JeroenG\Autowire\ConfigurationValue;
 use JeroenG\Autowire\Crawler;
 use JeroenG\Autowire\Electrician;
 use JeroenG\Autowire\Exception\FaultyWiringException;
+use JeroenG\Autowire\Exception\InvalidAttributeException;
 use JeroenG\Autowire\Tests\Support\Attributes\CustomAutowire;
 use JeroenG\Autowire\Tests\Support\Attributes\CustomConfigure;
 use JeroenG\Autowire\Tests\Support\Subject\Contracts\GoodbyeInterface;
@@ -114,6 +115,31 @@ final class ElectricianTest extends TestCase
         $electrician->configure(GoodbyeInterface::class);
     }
     
+    /** @dataProvider invalidAutowireAttributeProvider */
+    public function test_it_throws_an_exception_on_an_invalid_custom_autowire_attribute(string $invalidAttribute): void
+    {
+        $crawler = Crawler::in([SubjectDirectory::ALL]);
+
+        $this->expectException(InvalidAttributeException::class);
+
+        $electrician = new Electrician($crawler, $invalidAttribute);
+    }
+    
+    public function invalidAutowireAttributeProvider(): \Generator
+    {
+        yield 'text' => [
+            'Hello, World!',
+        ];
+        
+        yield 'non-attribute class' => [
+            HowDoYouDoInterface::class,
+        ];
+        
+        yield 'wrong attribute class' => [
+            CustomConfigure::class,
+        ];
+    }
+    
     public function test_it_can_tell_if_class_has_custom_autowire_attribute(): void
     {
         $crawler = Crawler::in([SubjectDirectory::ALL]);
@@ -132,6 +158,31 @@ final class ElectricianTest extends TestCase
 
         self::assertEquals(HowDoYouDoInterface::class, $wire->interface);
         self::assertEquals(MoonClass::class, $wire->implementation);
+    }
+    
+    /** @dataProvider invalidConfigureAttributeProvider */
+    public function test_it_throws_an_exception_on_an_invalid_custom_configure_attribute(string $invalidAttribute): void
+    {
+        $crawler = Crawler::in([SubjectDirectory::ALL]);
+
+        $this->expectException(InvalidAttributeException::class);
+
+        $electrician = new Electrician(crawler: $crawler, configureAttribute: $invalidAttribute);
+    }
+    
+    public function invalidConfigureAttributeProvider(): \Generator
+    {
+        yield 'text' => [
+            'Hello, World!',
+        ];
+        
+        yield 'non-attribute class' => [
+            HowDoYouDoInterface::class,
+        ];
+        
+        yield 'wrong attribute class' => [
+            CustomAutowire::class,
+        ];
     }
 
     public function test_it_can_tell_if_class_has_custom_configure_attribute(): void
