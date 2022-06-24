@@ -5,8 +5,6 @@ namespace JeroenG\Autowire\Console;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\File;
-use JeroenG\Autowire\Crawler;
-use JeroenG\Autowire\Electrician;
 
 class AutowireClearCommand extends Command
 {
