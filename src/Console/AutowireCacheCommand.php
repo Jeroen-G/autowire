@@ -5,6 +5,8 @@ namespace JeroenG\Autowire\Console;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\File;
+use JeroenG\Autowire\Attribute\Autowire as AutowireAttribute;
+use JeroenG\Autowire\Attribute\Configure as ConfigureAttribute;
 use JeroenG\Autowire\Crawler;
 use JeroenG\Autowire\Electrician;
 
@@ -17,7 +19,9 @@ class AutowireCacheCommand extends Command
     public function handle(): int
     {
         $crawler = Crawler::in(config('autowire.directories'));
-        $electrician = new Electrician($crawler);
+        $autowireAttribute = config('autowire.autowire_attribute', AutowireAttribute::class);
+        $configureAttribute = config('autowire.configure_attribute', ConfigureAttribute::class);
+        $electrician = new Electrician($crawler, $autowireAttribute, $configureAttribute);
 
         $autowires = $crawler->filter(fn(string $name) => $electrician->canAutowire($name))->classNames();
         $configures = $crawler->filter(fn(string $name) => $electrician->canConfigure($name))->classNames();
