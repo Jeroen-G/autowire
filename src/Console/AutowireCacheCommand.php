@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\File;
 use JeroenG\Autowire\Attribute\Autowire as AutowireAttribute;
 use JeroenG\Autowire\Attribute\Configure as ConfigureAttribute;
+use JeroenG\Autowire\Attribute\Listen as ListenAttribute;
 use JeroenG\Autowire\Crawler;
 use JeroenG\Autowire\Electrician;
 
@@ -20,17 +21,24 @@ class AutowireCacheCommand extends Command
     {
         $crawler = Crawler::in(config('autowire.directories'));
         $autowireAttribute = config('autowire.autowire_attribute', AutowireAttribute::class);
+        $listenAttribute = config('autowire.listen_attribute', ListenAttribute::class);
         $configureAttribute = config('autowire.configure_attribute', ConfigureAttribute::class);
-        $electrician = new Electrician($crawler, $autowireAttribute, $configureAttribute);
+        $electrician = new Electrician($crawler, $autowireAttribute, $listenAttribute, $configureAttribute);
 
         $autowires = $crawler->filter(fn(string $name) => $electrician->canAutowire($name))->classNames();
+        $listeners = $crawler->filter(fn(string $name) => $electrician->canListen($name))->classNames();
         $configures = $crawler->filter(fn(string $name) => $electrician->canConfigure($name))->classNames();
         $autowireCache = [];
+        $listenCache = [];
         $configureCache = [];
 
         foreach ($autowires as $interface) {
             $wire = $electrician->connect($interface);
             $autowireCache[$wire->interface] = $wire->implementation;
+        }
+
+        foreach ($listeners as $listener) {
+            $listenCache[$listener] = $electrician->events($listener);
         }
 
         foreach ($configures as $implementation) {
@@ -47,6 +55,7 @@ class AutowireCacheCommand extends Command
 
         $cache = [
             'autowire' => $autowireCache,
+            'listen' => $listenCache,
             'configure' => $configureCache,
         ];
 

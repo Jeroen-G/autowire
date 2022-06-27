@@ -8,6 +8,7 @@ use JeroenG\Autowire\Crawler;
 use JeroenG\Autowire\Tests\Support\Subject\Contracts\GoodbyeInterface;
 use JeroenG\Autowire\Tests\Support\Subject\Contracts\HelloInterface;
 use JeroenG\Autowire\Tests\Support\Subject\Contracts\HowDoYouDoInterface;
+use JeroenG\Autowire\Tests\Support\Subject\Domain\CustomListener;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\ClassGreeting;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\ConfigGreeting;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\CustomGreeting;
@@ -28,6 +29,7 @@ final class CrawlerTest extends TestCase
             GoodbyeInterface::class,
             HelloInterface::class,
             HowDoYouDoInterface::class,
+            CustomListener::class,
             ClassGreeting::class,
             ConfigGreeting::class,
             CustomGreeting::class,
@@ -49,6 +51,7 @@ final class CrawlerTest extends TestCase
             GoodbyeInterface::class,
             HelloInterface::class,
             HowDoYouDoInterface::class,
+            CustomListener::class,
             MarsClass::class,
             MoonClass::class,
             WorldClass::class,
