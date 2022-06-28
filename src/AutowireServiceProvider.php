@@ -78,9 +78,9 @@ class AutowireServiceProvider extends ServiceProvider
     {
         $crawler = Crawler::in(config('autowire.directories'));
         $autowireAttribute = config('autowire.autowire_attribute', AutowireAttribute::class);
-        $listenAttribute = config('autowire.listen_attribute', ListenAttribute::class);
         $configureAttribute = config('autowire.configure_attribute', ConfigureAttribute::class);
-        $electrician = new Electrician($crawler, $autowireAttribute, $listenAttribute, $configureAttribute);
+        $listenAttribute = config('autowire.listen_attribute', ListenAttribute::class);
+        $electrician = new Electrician($crawler, $autowireAttribute, $configureAttribute, $listenAttribute,);
 
         $wires = $crawler->filter(fn (string $name) => $electrician->canAutowire($name))->classNames();
         $listeners = $crawler->filter(fn (string $name) => $electrician->canListen($name))->classNames();

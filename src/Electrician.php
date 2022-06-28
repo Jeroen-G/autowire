@@ -27,8 +27,8 @@ final class Electrician
     public function __construct(
         private Crawler $crawler,
         private string $autowireAttribute = AutowireAttribute::class,
+        private string $configureAttribute = ConfigureAttribute::class,
         private string $listenAttribute = ListenAttribute::class,
-        private string $configureAttribute = ConfigureAttribute::class
     )
     {
         self::checkValidAttributeImplementation($this->autowireAttribute, AutowireAttributeInterface::class);
