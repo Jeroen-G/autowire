@@ -11,7 +11,7 @@ use JeroenG\Autowire\Attribute\Listen;
 use JeroenG\Autowire\Attribute\Listen as ListenAttribute;
 use JeroenG\Autowire\Attribute\Configure as ConfigureAttribute;
 use JeroenG\Autowire\Attribute\ConfigureInterface as ConfigureAttributeInterface;
-use JeroenG\Autowire\Attribute\ListenInterface as ListenAttributeInterfaceAlias;
+use JeroenG\Autowire\Attribute\ListenInterface as ListenAttributeInterface;
 use JeroenG\Autowire\Exception\FaultyWiringException;
 use JeroenG\Autowire\Exception\InvalidAttributeException;
 use ReflectionAttribute;
@@ -32,8 +32,8 @@ final class Electrician
     )
     {
         self::checkValidAttributeImplementation($this->autowireAttribute, AutowireAttributeInterface::class);
-        self::checkValidAttributeImplementation($this->listenAttribute, ListenAttributeInterfaceAlias::class);
         self::checkValidAttributeImplementation($this->configureAttribute, ConfigureAttributeInterface::class);
+        self::checkValidAttributeImplementation($this->listenAttribute, ListenAttributeInterface::class);
     }
 
     public function connect(string $interface): Wire
