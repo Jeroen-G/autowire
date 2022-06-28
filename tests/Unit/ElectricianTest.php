@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace JeroenG\Autowire\Tests\Unit;
 
 use Generator;
+use JeroenG\Autowire\Attribute\Autowire;
+use JeroenG\Autowire\Attribute\Configure;
+use JeroenG\Autowire\Attribute\Listen;
 use JeroenG\Autowire\ConfigurationType;
 use JeroenG\Autowire\ConfigurationValue;
 use JeroenG\Autowire\Crawler;
@@ -14,6 +17,9 @@ use JeroenG\Autowire\Exception\InvalidAttributeException;
 use JeroenG\Autowire\Tests\Support\Attributes\CustomAutowire;
 use JeroenG\Autowire\Tests\Support\Attributes\CustomConfigure;
 use JeroenG\Autowire\Tests\Support\Attributes\CustomListen;
+use JeroenG\Autowire\Tests\Support\Attributes\EmptyClass;
+use JeroenG\Autowire\Tests\Support\Attributes\NotAnAttribute;
+use JeroenG\Autowire\Tests\Support\Attributes\WrongAttribute;
 use JeroenG\Autowire\Tests\Support\Subject\Contracts\GoodbyeInterface;
 use JeroenG\Autowire\Tests\Support\Subject\Contracts\HelloInterface;
 use JeroenG\Autowire\Tests\Support\Subject\Contracts\HowDoYouDoInterface;
@@ -118,32 +124,7 @@ final class ElectricianTest extends TestCase
         $this->expectExceptionMessage('No JeroenG\Autowire\Attribute\Configure found in '.GoodbyeInterface::class);
         $electrician->configure(GoodbyeInterface::class);
     }
-    
-    /** @dataProvider invalidAutowireAttributeProvider */
-    public function test_it_throws_an_exception_on_an_invalid_custom_autowire_attribute(string $invalidAttribute): void
-    {
-        $crawler = Crawler::in([SubjectDirectory::ALL]);
 
-        $this->expectException(InvalidAttributeException::class);
-
-        new Electrician($crawler, $invalidAttribute);
-    }
-    
-    public function invalidAutowireAttributeProvider(): Generator
-    {
-        yield 'text' => [
-            'Hello, World!',
-        ];
-        
-        yield 'non-attribute class' => [
-            HowDoYouDoInterface::class,
-        ];
-        
-        yield 'wrong attribute class' => [
-            CustomConfigure::class,
-        ];
-    }
-    
     public function test_it_can_tell_if_class_has_custom_autowire_attribute(): void
     {
         $crawler = Crawler::in([SubjectDirectory::ALL]);
@@ -163,29 +144,55 @@ final class ElectricianTest extends TestCase
         self::assertEquals(HowDoYouDoInterface::class, $wire->interface);
         self::assertEquals(MoonClass::class, $wire->implementation);
     }
-    
-    /** @dataProvider invalidConfigureAttributeProvider */
-    public function test_it_throws_an_exception_on_an_invalid_custom_configure_attribute(string $invalidAttribute): void
+
+    /** @dataProvider invalidAttributeProvider */
+    public function test_it_throws_an_exception_on_an_invalid_custom_autowire_attribute(string $invalidAttribute, string $message): void
     {
         $crawler = Crawler::in([SubjectDirectory::ALL]);
 
         $this->expectException(InvalidAttributeException::class);
+        $this->expectExceptionMessage(sprintf($message, Autowire::class));
 
-        $electrician = new Electrician(crawler: $crawler, configureAttribute: $invalidAttribute);
+        new Electrician(crawler: $crawler, autowireAttribute: $invalidAttribute);
     }
-    
-    public function invalidConfigureAttributeProvider(): Generator
+
+    /** @dataProvider invalidAttributeProvider */
+    public function test_it_throws_an_exception_on_an_invalid_custom_configure_attribute(string $invalidAttribute, string $message): void
     {
-        yield 'text' => [
+        $crawler = Crawler::in([SubjectDirectory::ALL]);
+
+        $this->expectException(InvalidAttributeException::class);
+        $this->expectExceptionMessage(sprintf($message, Configure::class));
+
+        new Electrician(crawler: $crawler, configureAttribute: $invalidAttribute);
+    }
+
+    /** @dataProvider invalidAttributeProvider */
+    public function test_it_throws_an_exception_on_an_invalid_custom_listen_attribute(string $invalidAttribute, string $message): void
+    {
+        $crawler = Crawler::in([SubjectDirectory::ALL]);
+
+        $this->expectException(InvalidAttributeException::class);
+        $this->expectExceptionMessage(sprintf($message, Listen::class));
+
+        new Electrician(crawler: $crawler, listenAttribute: $invalidAttribute);
+    }
+
+    public function invalidAttributeProvider(): Generator
+    {
+        yield 'This is text, what are you doing?' => [
             'Hello, World!',
+            'Class Hello, World! does not exist'
         ];
-        
-        yield 'non-attribute class' => [
-            HowDoYouDoInterface::class,
+
+        yield 'This is a class, but not an attribute.' => [
+            EmptyClass::class,
+            'Class JeroenG\Autowire\Tests\Support\Attributes\EmptyClass is not an attribute'
         ];
-        
-        yield 'wrong attribute class' => [
-            CustomAutowire::class,
+
+        yield 'Wrong attribute class.' => [
+            WrongAttribute::class,
+            'Class JeroenG\Autowire\Tests\Support\Attributes\WrongAttribute does not implement %s'
         ];
     }
 
@@ -231,15 +238,6 @@ final class ElectricianTest extends TestCase
             MarsClass::class,
             MoonClass::class,
         ], $events);
-    }
-
-    public function test_it_throws_an_exception_on_an_invalid_custom_listen_attribute(): void
-    {
-        $crawler = Crawler::in([SubjectDirectory::ALL]);
-
-        $this->expectException(InvalidAttributeException::class);
-
-        new Electrician(crawler: $crawler, listenAttribute: HelloInterface::class);
     }
 
     public function test_it_throws_exception_on_a_class_missing_listeners(): void

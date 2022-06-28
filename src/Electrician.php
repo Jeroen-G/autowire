@@ -110,16 +110,15 @@ final class Electrician
         return $this->classHasAttribute($name, $this->configureAttribute);
     }
 
-    /**
-     * @throws InvalidAttributeException
-     */
+    /** @throws InvalidAttributeException */
     private static function checkValidAttributeImplementation(string $className, string $attributeInterface): void
     {
         if (! class_exists($className)) {
             throw InvalidAttributeException::doesNotExist($className);
         }
 
-        if (empty((new ReflectionClass($className))->getAttributes(Attribute::class))) {
+        $classDoesNotHaveGenericAttribute = empty((new ReflectionClass($className))->getAttributes(Attribute::class));
+        if ($classDoesNotHaveGenericAttribute) {
             throw InvalidAttributeException::isNotAnAttribute($className);
         }
 
