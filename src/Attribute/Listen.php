@@ -10,10 +10,6 @@ use JeroenG\Autowire\Exception\InvalidAttributeException;
 #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
 final class Listen implements ListenInterface
 {
-    public function __construct(public string $event)
-    {
-        if (! class_exists($this->event)) {
-            throw InvalidAttributeException::doesNotExist($this->event);
-        }
+    public function __construct(public string $event) {
     }
 }
