@@ -232,4 +232,24 @@ final class ElectricianTest extends TestCase
             MoonClass::class,
         ], $events);
     }
+
+    public function test_it_throws_an_exception_on_an_invalid_custom_listen_attribute(): void
+    {
+        $crawler = Crawler::in([SubjectDirectory::ALL]);
+
+        $this->expectException(InvalidAttributeException::class);
+
+        new Electrician(crawler: $crawler, listenAttribute: HelloInterface::class);
+    }
+
+    public function test_it_throws_exception_on_a_class_missing_listeners(): void
+    {
+        $this->expectException(FaultyWiringException::class);
+        $this->expectExceptionMessage('No JeroenG\Autowire\Tests\Support\Attributes\CustomListen found in JeroenG\Autowire\Tests\Support\Subject\Contracts\HelloInterface');
+
+        $crawler = Crawler::in([SubjectDirectory::GREETINGS]);
+        $electrician = new Electrician($crawler, listenAttribute: CustomListen::class);
+
+        $electrician->events(HelloInterface::class);
+    }
 }
