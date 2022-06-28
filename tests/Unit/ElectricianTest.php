@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace JeroenG\Autowire\Tests\Unit;
 
+use Generator;
 use JeroenG\Autowire\ConfigurationType;
 use JeroenG\Autowire\ConfigurationValue;
 use JeroenG\Autowire\Crawler;
@@ -12,13 +13,16 @@ use JeroenG\Autowire\Exception\FaultyWiringException;
 use JeroenG\Autowire\Exception\InvalidAttributeException;
 use JeroenG\Autowire\Tests\Support\Attributes\CustomAutowire;
 use JeroenG\Autowire\Tests\Support\Attributes\CustomConfigure;
+use JeroenG\Autowire\Tests\Support\Attributes\CustomListen;
 use JeroenG\Autowire\Tests\Support\Subject\Contracts\GoodbyeInterface;
 use JeroenG\Autowire\Tests\Support\Subject\Contracts\HelloInterface;
 use JeroenG\Autowire\Tests\Support\Subject\Contracts\HowDoYouDoInterface;
+use JeroenG\Autowire\Tests\Support\Subject\Domain\CustomListener;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\ClassGreeting;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\ConfigGreeting;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\CustomGreeting;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\TextGreeting;
+use JeroenG\Autowire\Tests\Support\Subject\Domain\MarsClass;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\MoonClass;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\WorldClass;
 use JeroenG\Autowire\Tests\Support\SubjectDirectory;
@@ -84,7 +88,7 @@ final class ElectricianTest extends TestCase
         self::assertEquals($expected, $configuration->definitions);
     }
 
-    public static function configureDataProvider(): \Generator
+    public static function configureDataProvider(): Generator
     {
         yield 'text' => [
             TextGreeting::class,
@@ -122,10 +126,10 @@ final class ElectricianTest extends TestCase
 
         $this->expectException(InvalidAttributeException::class);
 
-        $electrician = new Electrician($crawler, $invalidAttribute);
+        new Electrician($crawler, $invalidAttribute);
     }
     
-    public function invalidAutowireAttributeProvider(): \Generator
+    public function invalidAutowireAttributeProvider(): Generator
     {
         yield 'text' => [
             'Hello, World!',
@@ -170,7 +174,7 @@ final class ElectricianTest extends TestCase
         $electrician = new Electrician(crawler: $crawler, configureAttribute: $invalidAttribute);
     }
     
-    public function invalidConfigureAttributeProvider(): \Generator
+    public function invalidConfigureAttributeProvider(): Generator
     {
         yield 'text' => [
             'Hello, World!',
@@ -183,6 +187,15 @@ final class ElectricianTest extends TestCase
         yield 'wrong attribute class' => [
             CustomAutowire::class,
         ];
+    }
+
+    public function test_it_can_tell_if_class_has_custom_listen_attribute(): void
+    {
+        $crawler = Crawler::in([SubjectDirectory::ALL]);
+        $electrician = new Electrician($crawler, listenAttribute: CustomListen::class);
+
+        self::assertTrue($electrician->canListen(CustomListener::class));
+        self::assertFalse($electrician->canListen(HelloInterface::class));
     }
 
     public function test_it_can_tell_if_class_has_custom_configure_attribute(): void
@@ -205,5 +218,38 @@ final class ElectricianTest extends TestCase
 
         self::assertEquals(CustomGreeting::class, $configuration->implementation);
         self::assertEquals($expected, $configuration->definitions);
-    }    
+    }
+
+    public function test_it_can_retrieve_events_from_listener(): void
+    {
+        $crawler = Crawler::in([SubjectDirectory::GREETINGS]);
+        $electrician = new Electrician($crawler, listenAttribute: CustomListen::class);
+
+        $events = $electrician->events(CustomListener::class);
+
+        self::assertEquals([
+            MarsClass::class,
+            MoonClass::class,
+        ], $events);
+    }
+
+    public function test_it_throws_an_exception_on_an_invalid_custom_listen_attribute(): void
+    {
+        $crawler = Crawler::in([SubjectDirectory::ALL]);
+
+        $this->expectException(InvalidAttributeException::class);
+
+        new Electrician(crawler: $crawler, listenAttribute: HelloInterface::class);
+    }
+
+    public function test_it_throws_exception_on_a_class_missing_listeners(): void
+    {
+        $this->expectException(FaultyWiringException::class);
+        $this->expectExceptionMessage('No JeroenG\Autowire\Tests\Support\Attributes\CustomListen found in JeroenG\Autowire\Tests\Support\Subject\Contracts\HelloInterface');
+
+        $crawler = Crawler::in([SubjectDirectory::GREETINGS]);
+        $electrician = new Electrician($crawler, listenAttribute: CustomListen::class);
+
+        $electrician->events(HelloInterface::class);
+    }
 }

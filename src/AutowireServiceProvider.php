@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace JeroenG\Autowire;
 
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\ServiceProvider;
 use JeroenG\Autowire\Attribute\Autowire as AutowireAttribute;
 use JeroenG\Autowire\Attribute\Configure as ConfigureAttribute;
+use JeroenG\Autowire\Attribute\Listen as ListenAttribute;
 use JeroenG\Autowire\Console\AutowireCacheCommand;
 use JeroenG\Autowire\Console\AutowireClearCommand;
 use JsonException;
@@ -25,12 +27,12 @@ class AutowireServiceProvider extends ServiceProvider
 
     public function register(): void
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/autowire.php', 'autowire');
+        $this->mergeConfigFrom(__DIR__ . '/../config/autowire.php', 'autowire');
 
         try {
             $cache = File::getRequire(App::bootstrapPath('cache/autowire.php'));
             $this->loadFromCache($cache);
-        } catch (FileNotFoundException | JsonException) {
+        } catch (FileNotFoundException|JsonException) {
             $this->crawlAndLoad();
         }
     }
@@ -38,22 +40,27 @@ class AutowireServiceProvider extends ServiceProvider
     protected function bootForConsole(): void
     {
         $this->publishes([
-            __DIR__.'/../config/autowire.php' => config_path('autowire.php'),
+            __DIR__ . '/../config/autowire.php' => config_path('autowire.php'),
         ], 'autowire.config');
 
-         $this->commands([
-             AutowireCacheCommand::class,
-             AutowireClearCommand::class,
-         ]);
+        $this->commands([
+            AutowireCacheCommand::class,
+            AutowireClearCommand::class,
+        ]);
     }
 
     private function loadFromCache(array $cache): void
     {
         $autowireCache = $cache['autowire'] ?? [];
+        $listenCache = $cache['listen'] ?? [];
         $configureCache = $cache['configure'] ?? [];
 
         foreach ($autowireCache as $interface => $implementation) {
             $this->app->bindIf($interface, $implementation);
+        }
+
+        foreach ($listenCache as $listener => $events) {
+            Event::listen($events, $listener);
         }
 
         foreach ($configureCache as $implementation => $details) {
@@ -72,14 +79,22 @@ class AutowireServiceProvider extends ServiceProvider
         $crawler = Crawler::in(config('autowire.directories'));
         $autowireAttribute = config('autowire.autowire_attribute', AutowireAttribute::class);
         $configureAttribute = config('autowire.configure_attribute', ConfigureAttribute::class);
-        $electrician = new Electrician($crawler, $autowireAttribute, $configureAttribute);
+        $listenAttribute = config('autowire.listen_attribute', ListenAttribute::class);
+        $electrician = new Electrician($crawler, $autowireAttribute, $configureAttribute, $listenAttribute,);
 
-        $wires = $crawler->filter(fn(string $name) => $electrician->canAutowire($name))->classNames();
-        $configures = $crawler->filter(fn(string $name) => $electrician->canConfigure($name))->classNames();
+        $wires = $crawler->filter(fn (string $name) => $electrician->canAutowire($name))->classNames();
+        $listeners = $crawler->filter(fn (string $name) => $electrician->canListen($name))->classNames();
+        $configures = $crawler->filter(fn (string $name) => $electrician->canConfigure($name))->classNames();
 
         foreach ($wires as $interface) {
             $wire = $electrician->connect($interface);
             $this->app->bindIf($wire->interface, $wire->implementation);
+        }
+
+        foreach ($listeners as $listener) {
+            $events = $electrician->events($listener);
+
+            Event::listen($events, $listener);
         }
 
         foreach ($configures as $implementation) {

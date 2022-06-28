@@ -106,6 +106,32 @@ The notations of config and service definitions is the same as used in Symfony.
 #[Configure(['$message' => '%app.message%', '$logger' => '@Psr\Log\LoggerInterface'])]
 ```
 
+### Listen to events
+
+Does your `EventServiceProvider` get messy with a lot of listeners?
+
+```php
+protected $listen = [
+    Registered::class => [
+        UpdateLastLogin::class,
+        ...
+    ],
+    ...
+];
+```
+
+Use the PHP 8 attribute of this package to listen to events.
+
+```php
+#[Listen(Registered::class)]
+#[Listen(Login::class)]
+class UpdateLastLogin {
+   ...
+}
+```
+
+The Autowire package will crawl through the classes and bind the listeners to the event classes.
+
 ### Caching
 
 The autowiring and configuration can be cached with the command `php artisan autowire:cache`.
