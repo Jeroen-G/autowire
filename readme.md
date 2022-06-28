@@ -108,7 +108,7 @@ The notations of config and service definitions is the same as used in Symfony.
 
 ### Listen to events
 
-Does your `EventServiceProvider` get messy with a lot of listeners?
+If you use a lot of events, the `EventServiceProvider` will very likely become long and messy:
 
 ```php
 protected $listen = [
@@ -120,21 +120,21 @@ protected $listen = [
 ];
 ```
 
-Use the PHP 8 attribute of this package to listen to events.
+With the PHP 8 attribute of this package you can define the events for a listener alongside each other:
 
 ```php
 #[Listen(Registered::class)]
 #[Listen(Login::class)]
-class UpdateLastLogin {
+class UpdateLastLoginListener {
    ...
 }
 ```
 
-The Autowire package will crawl through the classes and bind the listeners to the event classes.
+The package will crawl through the classes and bind the listeners to the event classes.
 
 ### Caching
 
-The autowiring and configuration can be cached with the command `php artisan autowire:cache`.
+The autowiring, configuration and listeners can be cached with the command `php artisan autowire:cache`.
 In a similar fashion it can be cleared with `php artisan autowire:clear`.
 Keep in mind that caching means that it won't crawl all the classes and changes to the annotations will not be loaded.
 
@@ -147,7 +147,7 @@ It should contain the list of directories where Autowire should look for both in
 
 It is possible to use custom Attribute classes for either or both the autowiring or configuration functionality:
 - Create a custom attribute class, making sure to implement either `JeroenG\Autowire\Attribute\AutowireInterface` or `JeroenG\Autowire\Attribute\ConfigureInterface`, depending on the attribute you want to replace.
-- Add a `autowire_attribute` or `configure_attribute` setting to the `config/autowire.php` file, containing the fully-namespaced name of your custom attribute class.
+- Add a `autowire_attribute`, `configure_attribute` or `listen_attribute` setting to the `config/autowire.php` file, containing the fully-namespaced name of your custom attribute class.
 - Use your custom attribute to mark the interface or class you want to autowire or configure.
 
 ## Changelog

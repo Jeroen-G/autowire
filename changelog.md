@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [1.5]
+- New `Listen` attribute for autowiring events to event listeners
+
 ## [1.4.1]
 - Custom attributes now work with caching
 
