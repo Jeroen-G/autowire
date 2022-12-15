@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace JeroenG\Autowire\Tests\Unit;
 
 use JeroenG\Autowire\Crawler;
+use JeroenG\Autowire\Tests\Support\Subject\Contracts\GoodafternoonInterface;
 use JeroenG\Autowire\Tests\Support\Subject\Contracts\GoodbyeInterface;
+use JeroenG\Autowire\Tests\Support\Subject\Contracts\GoodeveningInterface;
+use JeroenG\Autowire\Tests\Support\Subject\Contracts\GoodmorningInterface;
 use JeroenG\Autowire\Tests\Support\Subject\Contracts\HelloInterface;
 use JeroenG\Autowire\Tests\Support\Subject\Contracts\HowDoYouDoInterface;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\CustomListener;
@@ -26,7 +29,10 @@ final class CrawlerTest extends TestCase
         $crawler = Crawler::in([SubjectDirectory::ALL]);
 
         $expected = [
+            GoodafternoonInterface::class,
             GoodbyeInterface::class,
+            GoodeveningInterface::class,
+            GoodmorningInterface::class,
             HelloInterface::class,
             HowDoYouDoInterface::class,
             CustomListener::class,
@@ -48,7 +54,10 @@ final class CrawlerTest extends TestCase
             ->filter(fn(string $class) => !str_contains($class, 'Greeting'));
 
         $expected = [
+            GoodafternoonInterface::class,
             GoodbyeInterface::class,
+            GoodeveningInterface::class,
+            GoodmorningInterface::class,
             HelloInterface::class,
             HowDoYouDoInterface::class,
             CustomListener::class,

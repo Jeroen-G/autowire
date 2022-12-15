@@ -10,6 +10,7 @@ use JeroenG\Autowire\Attribute\Configure as ConfigureAttribute;
 use JeroenG\Autowire\Attribute\Listen as ListenAttribute;
 use JeroenG\Autowire\Crawler;
 use JeroenG\Autowire\Electrician;
+use JeroenG\Autowire\TaggedInterface;
 
 class AutowireCacheCommand extends Command
 {
@@ -28,6 +29,8 @@ class AutowireCacheCommand extends Command
         $autowires = $crawler->filter(fn(string $name) => $electrician->canAutowire($name))->classNames();
         $listeners = $crawler->filter(fn(string $name) => $electrician->canListen($name))->classNames();
         $configures = $crawler->filter(fn(string $name) => $electrician->canConfigure($name))->classNames();
+        $taggables = $crawler->filter(fn (string $name) => $electrician->canAutotag($name))->classNames();
+        
         $autowireCache = [];
         $listenCache = [];
         $configureCache = [];
@@ -52,11 +55,14 @@ class AutowireCacheCommand extends Command
                 ];
             }
         }
+        
+        $autotagCache = array_map(fn (string $interface): TaggedInterface => $electrician->tag($interface), $taggables);
 
         $cache = [
             'autowire' => $autowireCache,
             'listen' => $listenCache,
             'configure' => $configureCache,
+            'autotag' => $autotagCache,
         ];
 
         File::put(
