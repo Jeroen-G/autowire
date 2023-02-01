@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\ServiceProvider;
+use JeroenG\Autowire\Attribute\Autotag as AutotagAttribute;
 use JeroenG\Autowire\Attribute\Autowire as AutowireAttribute;
 use JeroenG\Autowire\Attribute\Configure as ConfigureAttribute;
 use JeroenG\Autowire\Attribute\Listen as ListenAttribute;

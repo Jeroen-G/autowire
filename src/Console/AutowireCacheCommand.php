@@ -24,7 +24,8 @@ class AutowireCacheCommand extends Command
         $autowireAttribute = config('autowire.autowire_attribute', AutowireAttribute::class);
         $configureAttribute = config('autowire.configure_attribute', ConfigureAttribute::class);
         $listenAttribute = config('autowire.listen_attribute', ListenAttribute::class);
-        $electrician = new Electrician($crawler, $autowireAttribute, $configureAttribute, $listenAttribute);
+        $autotagAttribute = config('autowire.autotag_attribute', AutotagAttribute::class);
+        $electrician = new Electrician($crawler, $autowireAttribute, $configureAttribute, $listenAttribute, $autotagAttribute);
 
         $autowires = $crawler->filter(fn(string $name) => $electrician->canAutowire($name))->classNames();
         $listeners = $crawler->filter(fn(string $name) => $electrician->canListen($name))->classNames();
@@ -56,7 +57,7 @@ class AutowireCacheCommand extends Command
             }
         }
         
-        $autotagCache = array_map(fn (string $interface): TaggedInterface => $electrician->tag($interface), $taggables);
+        $autotagCache = array_values(array_map(fn (string $interface): TaggedInterface => $electrician->tag($interface), $taggables));
 
         $cache = [
             'autowire' => $autowireCache,

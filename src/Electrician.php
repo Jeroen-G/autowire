@@ -188,6 +188,6 @@ final class Electrician
     {
         return $this->crawler
             ->filter(fn (string $className): bool => is_subclass_of($className, $interface))
-            ->classNames();            
+            ->classNames();
     }
 }

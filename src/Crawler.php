@@ -12,6 +12,7 @@ final class Crawler
     private function __construct(
         private array $names
     ) {
+        $this->names = array_values($this->names);
     }
 
     public static function in(array $directories): Crawler

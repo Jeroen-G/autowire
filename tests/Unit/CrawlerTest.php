@@ -66,6 +66,33 @@ final class CrawlerTest extends TestCase
             WorldClass::class,
         ];
 
-        self::assertEqualsCanonicalizing($expected, array_values($crawler->classNames()));
+        self::assertEqualsCanonicalizing($expected, $crawler->classNames());
+    }
+    
+    public function test_classnames_are_returned_as_list(): void
+    {
+        $crawler = Crawler::in([SubjectDirectory::ALL])
+            ->filter(fn(string $class) => !str_contains($class, 'Greeting'));
+
+        self::assertIsList($crawler->classNames());
+    }
+    
+    public static function assertIsList($actual, $message = ''): void
+    {
+        if (function_exists("array_is_list")) {
+            self::assertTrue(array_is_list($actual), $message);
+        } else {
+            $isList = true;
+            $i = 0;
+            
+            foreach ($actual as $key => $_value) {
+                if ($key !== $i++) {
+                    $isList = false;
+                    break;
+                }
+            }
+            
+            self::assertTrue($isList, $message);
+        }
     }
 }
