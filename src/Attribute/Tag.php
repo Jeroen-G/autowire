@@ -11,7 +11,7 @@ use ReflectionClass;
 final class Tag implements TagInterface
 {
     public function __construct(
-        private readonly string $tag = '',
+        private string $tag = '',
     ) {
     }
 
