@@ -6,6 +6,7 @@ namespace JeroenG\Autowire;
 
 use Ergebnis\Classy\Constructs;
 use Illuminate\Support\Collection;
+use ReflectionClass;
 
 final class Crawler
 {
@@ -20,6 +21,11 @@ final class Crawler
         $names = (new Collection($directories))
             ->map(fn(string $directory) => Constructs::fromDirectory($directory))
             ->flatten()
+            ->filter(function ($construct): bool {
+                $r = new ReflectionClass($construct->name());
+                
+                return $r->isInterface() || (!$r->isAbstract() && !$r->isTrait());
+            })
             ->map(fn($construct) => $construct->name());
 
         return new Crawler($names->toArray());
