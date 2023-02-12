@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace JeroenG\Autowire;
 
 use Attribute;
+use JeroenG\Autowire\Attribute\Tag as TagAttribute;
 use JeroenG\Autowire\Attribute\Autowire as AutowireAttribute;
+use JeroenG\Autowire\Attribute\TagInterface as TagAttributeInterface;
 use JeroenG\Autowire\Attribute\AutowireInterface as AutowireAttributeInterface;
 use JeroenG\Autowire\Attribute\Listen;
 use JeroenG\Autowire\Attribute\Listen as ListenAttribute;
@@ -29,11 +31,13 @@ final class Electrician
         private string $autowireAttribute = AutowireAttribute::class,
         private string $configureAttribute = ConfigureAttribute::class,
         private string $listenAttribute = ListenAttribute::class,
+        private string $tagAttribute = TagAttribute::class,
     )
     {
         self::checkValidAttributeImplementation($this->autowireAttribute, AutowireAttributeInterface::class);
         self::checkValidAttributeImplementation($this->configureAttribute, ConfigureAttributeInterface::class);
         self::checkValidAttributeImplementation($this->listenAttribute, ListenAttributeInterface::class);
+        self::checkValidAttributeImplementation($this->tagAttribute, TagAttributeInterface::class);
     }
 
     public function connect(string $interface): Wire
@@ -55,7 +59,7 @@ final class Electrician
         $configurations = [];
 
         foreach ($attributes as $attribute) {
-            /** @var ConfigureAttribute $instance */
+            /** @var ConfigureAttributeInterface $instance */
             $instance = $attribute->newInstance();
 
             foreach ($instance->getConfigs() as $need => $give) {
@@ -86,7 +90,7 @@ final class Electrician
         $events = [];
 
         foreach ($attributes as $attribute) {
-            /** @var ListenAttribute $instance */
+            /** @var ListenAttributeInterface $instance */
             $instance = $attribute->newInstance();
 
             $events[] = $instance->event;
@@ -95,9 +99,35 @@ final class Electrician
         return $events;
     }
 
+    /**
+     * @param class-string $interface
+     */
+    public function tag(string $tagInterface): TaggedInterface
+    {
+        $reflectionClass = new ReflectionClass($tagInterface);
+
+        $attributes = $reflectionClass->getAttributes($this->tagAttribute);
+
+        if (empty($attributes)) {
+            throw FaultyWiringException::classHasNoAttribute($tagInterface, $this->tagAttribute);
+        }
+
+        $attribute = $attributes[0];
+
+        /** @var TagAttributeInterface $instance */
+        $instance = $attribute->newInstance();
+
+        return new TaggedInterface($instance->getTag($reflectionClass), $this->findAllImplementations($tagInterface));
+    }
+
     public function canAutowire(string $name): bool
     {
         return $this->classHasAttribute($name, $this->autowireAttribute);
+    }
+
+    public function canTag(string $name): bool
+    {
+        return $this->classHasAttribute($name, $this->tagAttribute);
     }
 
     public function canListen(string $name): bool
@@ -148,5 +178,16 @@ final class Electrician
         }
 
         throw FaultyWiringException::implementationNotFoundFor($interface);
+    }
+
+    /**
+     * @param class-string $interface
+     * @return list<class-string>
+     */
+    private function findAllImplementations(string $interface): array
+    {
+        return $this->crawler
+            ->filter(fn (string $className): bool => is_subclass_of($className, $interface))
+            ->classNames();
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JeroenG\Autowire\Tests\Unit;
 
 use Generator;
+use JeroenG\Autowire\Attribute\Tag;
 use JeroenG\Autowire\Attribute\Autowire;
 use JeroenG\Autowire\Attribute\Configure;
 use JeroenG\Autowire\Attribute\Listen;
@@ -14,13 +15,17 @@ use JeroenG\Autowire\Crawler;
 use JeroenG\Autowire\Electrician;
 use JeroenG\Autowire\Exception\FaultyWiringException;
 use JeroenG\Autowire\Exception\InvalidAttributeException;
+use JeroenG\Autowire\Tests\Support\Attributes\CustomTag;
 use JeroenG\Autowire\Tests\Support\Attributes\CustomAutowire;
 use JeroenG\Autowire\Tests\Support\Attributes\CustomConfigure;
 use JeroenG\Autowire\Tests\Support\Attributes\CustomListen;
 use JeroenG\Autowire\Tests\Support\Attributes\EmptyClass;
 use JeroenG\Autowire\Tests\Support\Attributes\NotAnAttribute;
 use JeroenG\Autowire\Tests\Support\Attributes\WrongAttribute;
+use JeroenG\Autowire\Tests\Support\Subject\Contracts\GoodafternoonInterface;
 use JeroenG\Autowire\Tests\Support\Subject\Contracts\GoodbyeInterface;
+use JeroenG\Autowire\Tests\Support\Subject\Contracts\GoodeveningInterface;
+use JeroenG\Autowire\Tests\Support\Subject\Contracts\GoodmorningInterface;
 use JeroenG\Autowire\Tests\Support\Subject\Contracts\HelloInterface;
 use JeroenG\Autowire\Tests\Support\Subject\Contracts\HowDoYouDoInterface;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\CustomListener;
@@ -53,6 +58,37 @@ final class ElectricianTest extends TestCase
         self::assertTrue($electrician->canConfigure(TextGreeting::class));
         self::assertFalse($electrician->canConfigure(GoodbyeInterface::class));
         self::assertFalse($electrician->canConfigure(WorldClass::class));
+    }
+
+    public function test_it_can_tell_if_class_has_tag_attribute(): void
+    {
+        $crawler = Crawler::in([SubjectDirectory::ALL]);
+        $electrician = new Electrician($crawler);
+
+        self::assertTrue($electrician->canTag(GoodafternoonInterface::class));
+        self::assertFalse($electrician->canTag(GoodbyeInterface::class));
+    }
+
+    public function test_it_can_tag_implementations(): void
+    {
+        $crawler = Crawler::in([SubjectDirectory::ALL]);
+        $electrician = new Electrician($crawler);
+
+        $taggedInterface = $electrician->tag(GoodafternoonInterface::class);
+
+        self::assertEquals(GoodafternoonInterface::class, $taggedInterface->tag);
+        self::assertEqualsCanonicalizing([MoonClass::class, WorldClass::class], $taggedInterface->implementations);
+    }
+
+    public function test_it_can_tag_implementations_with_a_custom_tag_string(): void
+    {
+        $crawler = Crawler::in([SubjectDirectory::ALL]);
+        $electrician = new Electrician($crawler);
+
+        $taggedInterface = $electrician->tag(GoodeveningInterface::class);
+
+        self::assertEquals('evening', $taggedInterface->tag);
+        self::assertEqualsCanonicalizing([MarsClass::class, WorldClass::class], $taggedInterface->implementations);
     }
 
     public function test_it_can_connect_implementation(): void
@@ -125,6 +161,25 @@ final class ElectricianTest extends TestCase
         $electrician->configure(GoodbyeInterface::class);
     }
 
+    public function test_it_throws_exception_when_interface_can_not_be_tagged(): void
+    {
+        $crawler = Crawler::in([SubjectDirectory::CONTRACTS]);
+        $electrician = new Electrician($crawler);
+
+        $this->expectException(FaultyWiringException::class);
+        $this->expectExceptionMessage('No JeroenG\Autowire\Attribute\Tag found in '.GoodbyeInterface::class);
+        $electrician->tag(GoodbyeInterface::class);
+    }
+
+    public function test_it_can_tell_if_class_has_custom_tag_attribute(): void
+    {
+        $crawler = Crawler::in([SubjectDirectory::ALL]);
+        $electrician = new Electrician($crawler, tagAttribute: CustomTag::class);
+
+        self::assertTrue($electrician->canTag(GoodmorningInterface::class));
+        self::assertFalse($electrician->canTag(GoodafternoonInterface::class));
+    }
+
     public function test_it_can_tell_if_class_has_custom_autowire_attribute(): void
     {
         $crawler = Crawler::in([SubjectDirectory::ALL]);
@@ -132,6 +187,17 @@ final class ElectricianTest extends TestCase
 
         self::assertTrue($electrician->canAutowire(HowDoYouDoInterface::class));
         self::assertFalse($electrician->canAutowire(HelloInterface::class));
+    }
+
+    public function test_it_can_tag_implementations_with_custom_tag_attribute(): void
+    {
+        $crawler = Crawler::in([SubjectDirectory::ALL]);
+        $electrician = new Electrician($crawler, tagAttribute: CustomTag::class);
+
+        $taggedInterface = $electrician->tag(GoodmorningInterface::class);
+
+        self::assertEquals(GoodmorningInterface::class, $taggedInterface->tag);
+        self::assertEqualsCanonicalizing([MarsClass::class, MoonClass::class], $taggedInterface->implementations);
     }
 
     public function test_it_can_connect_implementation_with_custom_autowire_attribute(): void
@@ -143,6 +209,17 @@ final class ElectricianTest extends TestCase
 
         self::assertEquals(HowDoYouDoInterface::class, $wire->interface);
         self::assertEquals(MoonClass::class, $wire->implementation);
+    }
+
+    /** @dataProvider invalidAttributeProvider */
+    public function test_it_throws_an_exception_on_an_invalid_custom_tag_attribute(string $invalidAttribute, string $message): void
+    {
+        $crawler = Crawler::in([SubjectDirectory::ALL]);
+
+        $this->expectException(InvalidAttributeException::class);
+        $this->expectExceptionMessage(sprintf($message, Tag::class));
+
+        new Electrician(crawler: $crawler, tagAttribute: $invalidAttribute);
     }
 
     /** @dataProvider invalidAttributeProvider */
