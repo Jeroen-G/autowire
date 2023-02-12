@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\File;
 use JeroenG\Autowire\Attribute\Autowire as AutowireAttribute;
+use JeroenG\Autowire\Attribute\Tag as TagAttribute;
 use JeroenG\Autowire\Attribute\Configure as ConfigureAttribute;
 use JeroenG\Autowire\Attribute\Listen as ListenAttribute;
 use JeroenG\Autowire\Crawler;
@@ -24,14 +25,14 @@ class AutowireCacheCommand extends Command
         $autowireAttribute = config('autowire.autowire_attribute', AutowireAttribute::class);
         $configureAttribute = config('autowire.configure_attribute', ConfigureAttribute::class);
         $listenAttribute = config('autowire.listen_attribute', ListenAttribute::class);
-        $autotagAttribute = config('autowire.autotag_attribute', AutotagAttribute::class);
-        $electrician = new Electrician($crawler, $autowireAttribute, $configureAttribute, $listenAttribute, $autotagAttribute);
+        $tagAttribute = config('autowire.tag_attribute', TagAttribute::class);
+        $electrician = new Electrician($crawler, $autowireAttribute, $configureAttribute, $listenAttribute, $tagAttribute);
 
         $autowires = $crawler->filter(fn(string $name) => $electrician->canAutowire($name))->classNames();
         $listeners = $crawler->filter(fn(string $name) => $electrician->canListen($name))->classNames();
         $configures = $crawler->filter(fn(string $name) => $electrician->canConfigure($name))->classNames();
-        $taggables = $crawler->filter(fn (string $name) => $electrician->canAutotag($name))->classNames();
-        
+        $taggables = $crawler->filter(fn (string $name) => $electrician->canTag($name))->classNames();
+
         $autowireCache = [];
         $listenCache = [];
         $configureCache = [];
@@ -56,14 +57,14 @@ class AutowireCacheCommand extends Command
                 ];
             }
         }
-        
-        $autotagCache = array_values(array_map(fn (string $interface): TaggedInterface => $electrician->tag($interface), $taggables));
+
+        $tagCache = array_values(array_map(fn (string $interface): TaggedInterface => $electrician->tag($interface), $taggables));
 
         $cache = [
             'autowire' => $autowireCache,
             'listen' => $listenCache,
             'configure' => $configureCache,
-            'autotag' => $autotagCache,
+            'tag' => $tagCache,
         ];
 
         File::put(

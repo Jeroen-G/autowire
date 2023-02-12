@@ -6,7 +6,7 @@ namespace JeroenG\Autowire\Attribute;
 
 use ReflectionClass;
 
-interface AutotagInterface
+interface TagInterface
 {
     public function getTag(ReflectionClass $targetInterface): string;
 }

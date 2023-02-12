@@ -8,13 +8,13 @@ use Attribute;
 use ReflectionClass;
 
 #[Attribute(Attribute::TARGET_CLASS)]
-final class Autotag implements AutotagInterface
+final class Tag implements TagInterface
 {
     public function __construct(
-        private string $tag = '',
+        private readonly string $tag = '',
     ) {
     }
-    
+
     public function getTag(ReflectionClass $targetInterface): string
     {
         return $this->tag ?: $targetInterface->getName();

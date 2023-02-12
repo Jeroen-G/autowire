@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace JeroenG\Autowire\Tests\Unit;
 
 use Generator;
-use JeroenG\Autowire\Attribute\Autotag;
+use JeroenG\Autowire\Attribute\Tag;
 use JeroenG\Autowire\Attribute\Autowire;
 use JeroenG\Autowire\Attribute\Configure;
 use JeroenG\Autowire\Attribute\Listen;
@@ -15,7 +15,7 @@ use JeroenG\Autowire\Crawler;
 use JeroenG\Autowire\Electrician;
 use JeroenG\Autowire\Exception\FaultyWiringException;
 use JeroenG\Autowire\Exception\InvalidAttributeException;
-use JeroenG\Autowire\Tests\Support\Attributes\CustomAutotag;
+use JeroenG\Autowire\Tests\Support\Attributes\CustomTag;
 use JeroenG\Autowire\Tests\Support\Attributes\CustomAutowire;
 use JeroenG\Autowire\Tests\Support\Attributes\CustomConfigure;
 use JeroenG\Autowire\Tests\Support\Attributes\CustomListen;
@@ -60,13 +60,13 @@ final class ElectricianTest extends TestCase
         self::assertFalse($electrician->canConfigure(WorldClass::class));
     }
 
-    public function test_it_can_tell_if_class_has_autotag_attribute(): void
+    public function test_it_can_tell_if_class_has_tag_attribute(): void
     {
         $crawler = Crawler::in([SubjectDirectory::ALL]);
         $electrician = new Electrician($crawler);
 
-        self::assertTrue($electrician->canAutotag(GoodafternoonInterface::class));
-        self::assertFalse($electrician->canAutotag(GoodbyeInterface::class));
+        self::assertTrue($electrician->canTag(GoodafternoonInterface::class));
+        self::assertFalse($electrician->canTag(GoodbyeInterface::class));
     }
 
     public function test_it_can_tag_implementations(): void
@@ -167,17 +167,17 @@ final class ElectricianTest extends TestCase
         $electrician = new Electrician($crawler);
 
         $this->expectException(FaultyWiringException::class);
-        $this->expectExceptionMessage('No JeroenG\Autowire\Attribute\Autotag found in '.GoodbyeInterface::class);
+        $this->expectExceptionMessage('No JeroenG\Autowire\Attribute\Tag found in '.GoodbyeInterface::class);
         $electrician->tag(GoodbyeInterface::class);
     }
 
-    public function test_it_can_tell_if_class_has_custom_autotag_attribute(): void
+    public function test_it_can_tell_if_class_has_custom_tag_attribute(): void
     {
         $crawler = Crawler::in([SubjectDirectory::ALL]);
-        $electrician = new Electrician($crawler, autotagAttribute: CustomAutotag::class);
+        $electrician = new Electrician($crawler, tagAttribute: CustomTag::class);
 
-        self::assertTrue($electrician->canAutotag(GoodmorningInterface::class));
-        self::assertFalse($electrician->canAutotag(GoodafternoonInterface::class));
+        self::assertTrue($electrician->canTag(GoodmorningInterface::class));
+        self::assertFalse($electrician->canTag(GoodafternoonInterface::class));
     }
 
     public function test_it_can_tell_if_class_has_custom_autowire_attribute(): void
@@ -189,10 +189,10 @@ final class ElectricianTest extends TestCase
         self::assertFalse($electrician->canAutowire(HelloInterface::class));
     }
 
-    public function test_it_can_tag_implementations_with_custom_autotag_attribute(): void
+    public function test_it_can_tag_implementations_with_custom_tag_attribute(): void
     {
         $crawler = Crawler::in([SubjectDirectory::ALL]);
-        $electrician = new Electrician($crawler, autotagAttribute: CustomAutotag::class);
+        $electrician = new Electrician($crawler, tagAttribute: CustomTag::class);
 
         $taggedInterface = $electrician->tag(GoodmorningInterface::class);
 
@@ -212,14 +212,14 @@ final class ElectricianTest extends TestCase
     }
 
     /** @dataProvider invalidAttributeProvider */
-    public function test_it_throws_an_exception_on_an_invalid_custom_autotag_attribute(string $invalidAttribute, string $message): void
+    public function test_it_throws_an_exception_on_an_invalid_custom_tag_attribute(string $invalidAttribute, string $message): void
     {
         $crawler = Crawler::in([SubjectDirectory::ALL]);
 
         $this->expectException(InvalidAttributeException::class);
-        $this->expectExceptionMessage(sprintf($message, Autotag::class));
+        $this->expectExceptionMessage(sprintf($message, Tag::class));
 
-        new Electrician(crawler: $crawler, autotagAttribute: $invalidAttribute);
+        new Electrician(crawler: $crawler, tagAttribute: $invalidAttribute);
     }
 
     /** @dataProvider invalidAttributeProvider */

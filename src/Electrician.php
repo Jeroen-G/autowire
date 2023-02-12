@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace JeroenG\Autowire;
 
 use Attribute;
-use JeroenG\Autowire\Attribute\Autotag as AutotagAttribute;
+use JeroenG\Autowire\Attribute\Tag as TagAttribute;
 use JeroenG\Autowire\Attribute\Autowire as AutowireAttribute;
-use JeroenG\Autowire\Attribute\AutotagInterface as AutotagAttributeInterface;
+use JeroenG\Autowire\Attribute\TagInterface as TagAttributeInterface;
 use JeroenG\Autowire\Attribute\AutowireInterface as AutowireAttributeInterface;
 use JeroenG\Autowire\Attribute\Listen;
 use JeroenG\Autowire\Attribute\Listen as ListenAttribute;
@@ -31,13 +31,13 @@ final class Electrician
         private string $autowireAttribute = AutowireAttribute::class,
         private string $configureAttribute = ConfigureAttribute::class,
         private string $listenAttribute = ListenAttribute::class,
-        private string $autotagAttribute = AutotagAttribute::class,
+        private string $tagAttribute = TagAttribute::class,
     )
     {
         self::checkValidAttributeImplementation($this->autowireAttribute, AutowireAttributeInterface::class);
         self::checkValidAttributeImplementation($this->configureAttribute, ConfigureAttributeInterface::class);
         self::checkValidAttributeImplementation($this->listenAttribute, ListenAttributeInterface::class);
-        self::checkValidAttributeImplementation($this->autotagAttribute, AutotagAttributeInterface::class);
+        self::checkValidAttributeImplementation($this->tagAttribute, TagAttributeInterface::class);
     }
 
     public function connect(string $interface): Wire
@@ -98,26 +98,26 @@ final class Electrician
 
         return $events;
     }
-    
+
     /**
      * @param class-string $interface
      */
-    public function tag(string $autotagInterface): TaggedInterface
+    public function tag(string $tagInterface): TaggedInterface
     {
-        $reflectionClass = new ReflectionClass($autotagInterface);
-        
-        $attributes = $reflectionClass->getAttributes($this->autotagAttribute);
+        $reflectionClass = new ReflectionClass($tagInterface);
+
+        $attributes = $reflectionClass->getAttributes($this->tagAttribute);
 
         if (empty($attributes)) {
-            throw FaultyWiringException::classHasNoAttribute($autotagInterface, $this->autotagAttribute);
+            throw FaultyWiringException::classHasNoAttribute($tagInterface, $this->tagAttribute);
         }
-        
+
         $attribute = $attributes[0];
-        
-        /** @var AutotagAttributeInterface $instance */
+
+        /** @var TagAttributeInterface $instance */
         $instance = $attribute->newInstance();
-        
-        return new TaggedInterface($instance->getTag($reflectionClass), $this->findAllImplementations($autotagInterface));
+
+        return new TaggedInterface($instance->getTag($reflectionClass), $this->findAllImplementations($tagInterface));
     }
 
     public function canAutowire(string $name): bool
@@ -125,9 +125,9 @@ final class Electrician
         return $this->classHasAttribute($name, $this->autowireAttribute);
     }
 
-    public function canAutotag(string $name): bool
+    public function canTag(string $name): bool
     {
-        return $this->classHasAttribute($name, $this->autotagAttribute);
+        return $this->classHasAttribute($name, $this->tagAttribute);
     }
 
     public function canListen(string $name): bool

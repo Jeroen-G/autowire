@@ -64,14 +64,14 @@ If there already is a binding in the container it will skip the autowiring.
 
 ### Tagging
 
-If you quickly want to tag all implementations of an interface, simply add the `Autotag` attribute to the interface:
+If you quickly want to tag all implementations of an interface, simply add the `Tag` attribute to the interface:
 
 ```php
 namespace App\Contracts;
 
-use JeroenG\Autowire\Attribute\Autotag;
+use JeroenG\Autowire\Attribute\Tag;
 
-#[Autotag('myTag')]
+#[Tag('myTag')]
 interface HelloInterface
 {
     public function hello(): string;
@@ -91,9 +91,9 @@ If no tag value is specified in the attribute, the fully-namespaced name of the 
 ```php
 namespace App\Contracts;
 
-use JeroenG\Autowire\Attribute\Autotag;
+use JeroenG\Autowire\Attribute\Tag;
 
-#[Autotag]
+#[Tag]
 interface GoodbyeInterface
 {
     public function goodbye(): string;
@@ -191,7 +191,7 @@ It should contain the list of directories where Autowire should look for both in
 
 It is possible to use custom Attribute classes for either or both the autowiring or configuration functionality:
 - Create a custom attribute class, making sure to implement either `JeroenG\Autowire\Attribute\AutowireInterface` or `JeroenG\Autowire\Attribute\ConfigureInterface`, depending on the attribute you want to replace.
-- Add a `autowire_attribute`, `configure_attribute` or `listen_attribute` setting to the `config/autowire.php` file, containing the fully-namespaced name of your custom attribute class.
+- Add a `autowire_attribute`, `configure_attribute`, `tag_attribute` or `listen_attribute` setting to the `config/autowire.php` file, containing the fully-namespaced name of your custom attribute class.
 - Use your custom attribute to mark the interface or class you want to autowire or configure.
 
 ## Changelog
