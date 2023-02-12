@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace JeroenG\Autowire\Tests\Unit;
 
 use JeroenG\Autowire\Crawler;
+use JeroenG\Autowire\Tests\Support\Subject\Contracts\GoodafternoonInterface;
 use JeroenG\Autowire\Tests\Support\Subject\Contracts\GoodbyeInterface;
+use JeroenG\Autowire\Tests\Support\Subject\Contracts\GoodeveningInterface;
+use JeroenG\Autowire\Tests\Support\Subject\Contracts\GoodmorningInterface;
 use JeroenG\Autowire\Tests\Support\Subject\Contracts\HelloInterface;
 use JeroenG\Autowire\Tests\Support\Subject\Contracts\HowDoYouDoInterface;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\CustomListener;
@@ -26,7 +29,10 @@ final class CrawlerTest extends TestCase
         $crawler = Crawler::in([SubjectDirectory::ALL]);
 
         $expected = [
+            GoodafternoonInterface::class,
             GoodbyeInterface::class,
+            GoodeveningInterface::class,
+            GoodmorningInterface::class,
             HelloInterface::class,
             HowDoYouDoInterface::class,
             CustomListener::class,
@@ -48,7 +54,10 @@ final class CrawlerTest extends TestCase
             ->filter(fn(string $class) => !str_contains($class, 'Greeting'));
 
         $expected = [
+            GoodafternoonInterface::class,
             GoodbyeInterface::class,
+            GoodeveningInterface::class,
+            GoodmorningInterface::class,
             HelloInterface::class,
             HowDoYouDoInterface::class,
             CustomListener::class,
@@ -57,6 +66,33 @@ final class CrawlerTest extends TestCase
             WorldClass::class,
         ];
 
-        self::assertEqualsCanonicalizing($expected, array_values($crawler->classNames()));
+        self::assertEqualsCanonicalizing($expected, $crawler->classNames());
+    }
+    
+    public function test_classnames_are_returned_as_list(): void
+    {
+        $crawler = Crawler::in([SubjectDirectory::ALL])
+            ->filter(fn(string $class) => !str_contains($class, 'Greeting'));
+
+        self::assertIsList($crawler->classNames());
+    }
+    
+    public static function assertIsList($actual, $message = ''): void
+    {
+        if (function_exists("array_is_list")) {
+            self::assertTrue(array_is_list($actual), $message);
+        } else {
+            $isList = true;
+            $i = 0;
+            
+            foreach ($actual as $key => $_value) {
+                if ($key !== $i++) {
+                    $isList = false;
+                    break;
+                }
+            }
+            
+            self::assertTrue($isList, $message);
+        }
     }
 }

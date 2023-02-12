@@ -62,6 +62,50 @@ class WorldClass implements HelloInterface
 The Autowire package will crawl through the classes and bind the abstract interface to the concrete class.
 If there already is a binding in the container it will skip the autowiring.
 
+### Tagging
+
+If you quickly want to tag all implementations of an interface, simply add the `Autotag` attribute to the interface:
+
+```php
+namespace App\Contracts;
+
+use JeroenG\Autowire\Attribute\Autotag;
+
+#[Autotag('myTag')]
+interface HelloInterface
+{
+    public function hello(): string;
+}
+```
+
+All implementations will now be available under the 'myTag' tag:
+
+```php
+$this->app->when(Greeting::class)
+	->needs(HelloInterface::class)
+	->giveTagged('myTag');
+```
+
+If no tag value is specified in the attribute, the fully-namespaced name of the class will be used as the tag:
+
+```php
+namespace App\Contracts;
+
+use JeroenG\Autowire\Attribute\Autotag;
+
+#[Autotag]
+interface GoodbyeInterface
+{
+    public function goodbye(): string;
+}
+```
+
+```php
+$this->app->when(Greeting::class)
+	->needs(GoodbyeInterface::class)
+	->giveTagged(GoodbyeInterface::class);
+```
+
 ### Configure
 
 Personally I like injection of dependencies over resolving them using `make()` helpers.

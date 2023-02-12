@@ -8,11 +8,13 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\ServiceProvider;
+use JeroenG\Autowire\Attribute\Autotag as AutotagAttribute;
 use JeroenG\Autowire\Attribute\Autowire as AutowireAttribute;
 use JeroenG\Autowire\Attribute\Configure as ConfigureAttribute;
 use JeroenG\Autowire\Attribute\Listen as ListenAttribute;
 use JeroenG\Autowire\Console\AutowireCacheCommand;
 use JeroenG\Autowire\Console\AutowireClearCommand;
+use JeroenG\Autowire\TaggedInterface;
 use JsonException;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 
@@ -54,6 +56,7 @@ class AutowireServiceProvider extends ServiceProvider
         $autowireCache = $cache['autowire'] ?? [];
         $listenCache = $cache['listen'] ?? [];
         $configureCache = $cache['configure'] ?? [];
+        $autotagCache = $cache['autotag'] ?? [];
 
         foreach ($autowireCache as $interface => $implementation) {
             $this->app->bindIf($interface, $implementation);
@@ -72,6 +75,8 @@ class AutowireServiceProvider extends ServiceProvider
 
             $this->define($implementation, $definition);
         }
+        
+        array_walk($autotagCache, function (TaggedInterface $taggedInterface): void {$this->app->tag($taggedInterface->implementations, $taggedInterface->tag);});
     }
 
     private function crawlAndLoad(): void
@@ -80,11 +85,13 @@ class AutowireServiceProvider extends ServiceProvider
         $autowireAttribute = config('autowire.autowire_attribute', AutowireAttribute::class);
         $configureAttribute = config('autowire.configure_attribute', ConfigureAttribute::class);
         $listenAttribute = config('autowire.listen_attribute', ListenAttribute::class);
-        $electrician = new Electrician($crawler, $autowireAttribute, $configureAttribute, $listenAttribute,);
+        $autotagAttribute = config('autowire.autotag_attribute', AutotagAttribute::class);
+        $electrician = new Electrician($crawler, $autowireAttribute, $configureAttribute, $listenAttribute, $autotagAttribute,);
 
         $wires = $crawler->filter(fn (string $name) => $electrician->canAutowire($name))->classNames();
         $listeners = $crawler->filter(fn (string $name) => $electrician->canListen($name))->classNames();
         $configures = $crawler->filter(fn (string $name) => $electrician->canConfigure($name))->classNames();
+        $taggables = $crawler->filter(fn (string $name) => $electrician->canAutotag($name))->classNames();
 
         foreach ($wires as $interface) {
             $wire = $electrician->connect($interface);
@@ -104,6 +111,14 @@ class AutowireServiceProvider extends ServiceProvider
                 $this->define($implementation, $definition);
             }
         }
+        
+        array_walk(
+            $taggables,
+            function (string $interface) use ($electrician): void {
+                $taggedInterface = $electrician->tag($interface);
+                $this->app->tag($taggedInterface->implementations, $taggedInterface->tag);
+            },
+        );
     }
 
     private function define(string $implementation, ConfigurationValue $definition): void
