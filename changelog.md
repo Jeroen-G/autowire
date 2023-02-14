@@ -6,21 +6,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [1.6.1]
+
+### Fixed
+- Crawler should only return interfaces and non-abstract classes
+
 ## [1.6]
+
+### Added
 - New `Tag` attribute for automatically tagging implementations of an interface
 
 ## [1.5]
+
+### Added
 - New `Listen` attribute for autowiring events to event listeners
 
 ## [1.4.1]
+
+### Changed
 - Custom attributes now work with caching
 
 ## [1.4.0]
+
+### Added
 - Add option to use custom attribute classes
 
 ## [1.3.0]
 
-## Changed
+### Changed
 - Cache is now saves as a PHP file instead of JSON
 
 ## [1.2.0]
