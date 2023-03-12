@@ -26,7 +26,7 @@ php artisan vendor:publish --tag=autowire.config
 Are you tired of binding abstract interfaces to concrete classes all the time?
 
 ```php
-$this-app->bind(HelloInterface::class, WorldClass::class);
+$this->app->bind(HelloInterface::class, WorldClass::class);
 ```
 
 Use the PHP 8 attribute of this package to autowire any of your interfaces:
