@@ -208,9 +208,9 @@ Please see the [changelog](changelog.md) for more information on what has change
 MIT. Please see the [license file](license.md) for more information.
 
 [ico-version]: https://img.shields.io/packagist/v/jeroen-g/autowire.svg?style=flat-square
-[ico-actions]: https://img.shields.io/github/workflow/status/Jeroen-G/autowire/CI?label=CI%2FCD&style=flat-square
+[ico-actions]: https://img.shields.io/github/actions/workflow/status/Jeroen-G/autowire/ci.yml?label=CI%2FCD&style=flat-square
 
-[link-actions]: https://github.com/Jeroen-G/autowire/actions?query=workflow:CI
+[link-actions]: https://github.com/Jeroen-G/autowire/actions/workflows/ci.yml
 [link-packagist]: https://packagist.org/packages/jeroen-g/autowire
 [link-author]: https://github.com/jeroen-g
 [link-contributors]: ../../contributors
