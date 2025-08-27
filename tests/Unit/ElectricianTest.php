@@ -32,6 +32,7 @@ use JeroenG\Autowire\Tests\Support\Subject\Domain\CustomListener;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\ClassGreeting;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\ConfigGreeting;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\CustomGreeting;
+use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\TagGreeting;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\TextGreeting;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\MarsClass;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\MoonClass;
@@ -87,9 +88,26 @@ final class ElectricianTest extends TestCase
 
         $taggedInterface = $electrician->tag(GoodeveningInterface::class);
 
-        self::assertEquals('evening', $taggedInterface->tag);
+        self::assertEquals('#evening', $taggedInterface->tag);
         self::assertEqualsCanonicalizing([MarsClass::class, WorldClass::class], $taggedInterface->implementations);
     }
+
+//    public function test_it_can_get_configured_tags(): void
+//    {
+//        $crawler = Crawler::in([SubjectDirectory::ALL]);
+//        $electrician = new Electrician($crawler);
+//
+//        $taggedInterface = $electrician->tag(GoodeveningInterface::class);
+//
+//        self::assertEquals('#evening', $taggedInterface->tag);
+//
+//        $configuration = $electrician->configure($class);
+//
+//        $expected = [new ConfigurationValue('$greeting', $value, $type)];
+//
+//        self::assertEquals($class, $configuration->implementation);
+//        self::assertEquals($expected, $configuration->definitions);
+//    }
 
     public function test_it_can_connect_implementation(): void
     {
@@ -148,6 +166,12 @@ final class ElectricianTest extends TestCase
             ClassGreeting::class,
             'App\Greeting',
             ConfigurationType::SERVICE
+        ];
+
+        yield 'tag' => [
+            TagGreeting::class,
+            'evening',
+            ConfigurationType::TAGGED
         ];
     }
 

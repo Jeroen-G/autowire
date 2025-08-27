@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [2.0.0]
+
+### Added
+- Configurations can now include tags
+
 ## [1.9.0]
 
 ### Added

@@ -6,7 +6,7 @@ namespace JeroenG\Autowire\Tests\Support\Subject\Contracts;
 
 use JeroenG\Autowire\Attribute\Tag;
 
-#[Tag('evening')]
+#[Tag('#evening')]
 interface GoodeveningInterface
 {
     public function goodevening(): string;

@@ -70,6 +70,10 @@ final class Electrician
                 $configurations[] = new ConfigurationValue($need, $give, ConfigurationType::SERVICE);
             }
 
+            foreach ($instance->getTags() as $need => $give) {
+                $configurations[] = new ConfigurationValue($need, $give, ConfigurationType::TAGGED);
+            }
+
             foreach ($instance->getDefinitions() as $need => $give) {
                 $configurations[] = new ConfigurationValue($need, $give, ConfigurationType::UNKNOWN);
             }

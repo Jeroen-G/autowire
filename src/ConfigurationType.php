@@ -10,5 +10,7 @@ final class ConfigurationType
 
     public const SERVICE = 'service';
 
+    public const TAGGED = 'tagged';
+
     public const UNKNOWN = 'unknown';
 }
