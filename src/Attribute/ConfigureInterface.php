@@ -20,4 +20,9 @@ interface ConfigureInterface
      * @return array<non-empty-string, scalar>
      */
     public function getDefinitions(): array;
+
+    /**
+     * @return array<non-empty-string, scalar>
+     */
+    public function getTags(): array;
 }

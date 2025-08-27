@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace JeroenG\Autowire;
 
+use App\Console\Commands\Bot\SendEndOfWeekUpdate;
+use App\Domain\Bot\AlarmBellInterface;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\File;
@@ -130,6 +132,9 @@ class AutowireServiceProvider extends ServiceProvider
             case ConfigurationType::SERVICE:
                 $give = $this->app->make($definition->give);
                 $this->app->when($implementation)->needs($definition->need)->give($give);
+                break;
+            case ConfigurationType::TAGGED:
+                $this->app->when($implementation)->needs($definition->need)->giveTagged($definition->give);
                 break;
             case ConfigurationType::UNKNOWN:
             default:

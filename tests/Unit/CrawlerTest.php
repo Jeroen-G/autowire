@@ -15,6 +15,7 @@ use JeroenG\Autowire\Tests\Support\Subject\Domain\CustomListener;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\ClassGreeting;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\ConfigGreeting;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\CustomGreeting;
+use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\TagGreeting;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\TextGreeting;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\MarsClass;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\MoonClass;
@@ -39,6 +40,7 @@ final class CrawlerTest extends TestCase
             ClassGreeting::class,
             ConfigGreeting::class,
             CustomGreeting::class,
+            TagGreeting::class,
             TextGreeting::class,
             MarsClass::class,
             MoonClass::class,
@@ -68,7 +70,7 @@ final class CrawlerTest extends TestCase
 
         self::assertEqualsCanonicalizing($expected, $crawler->classNames());
     }
-    
+
     public function test_classnames_are_returned_as_list(): void
     {
         $crawler = Crawler::in([SubjectDirectory::ALL])
@@ -76,7 +78,7 @@ final class CrawlerTest extends TestCase
 
         self::assertIsList($crawler->classNames());
     }
-    
+
     public static function assertIsList($actual, $message = ''): void
     {
         if (function_exists("array_is_list")) {
@@ -84,14 +86,14 @@ final class CrawlerTest extends TestCase
         } else {
             $isList = true;
             $i = 0;
-            
+
             foreach ($actual as $key => $_value) {
                 if ($key !== $i++) {
                     $isList = false;
                     break;
                 }
             }
-            
+
             self::assertTrue($isList, $message);
         }
     }

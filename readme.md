@@ -146,6 +146,9 @@ The notations of config and service definitions is the same as used in Symfony.
 // Will inject an instance of the Message class
 #[Configure(['$message' => '@App\Domain\Message'])]
 
+// When you want tagged classes
+#[Configure(['$messages' => '#messages'])]
+
 // When you have multiple constructor arguments
 #[Configure(['$message' => '%app.message%', '$logger' => '@Psr\Log\LoggerInterface'])]
 ```
