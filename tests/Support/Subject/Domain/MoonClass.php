@@ -9,8 +9,8 @@ use JeroenG\Autowire\Tests\Support\Subject\Contracts\GoodmorningInterface;
 use JeroenG\Autowire\Tests\Support\Subject\Contracts\HowDoYouDoInterface;
 
 class MoonClass implements
-    GoodafternoonInterface, 
-    GoodmorningInterface, 
+    GoodafternoonInterface,
+    GoodmorningInterface,
     HowDoYouDoInterface
 {
     public function goodafternoon(): string

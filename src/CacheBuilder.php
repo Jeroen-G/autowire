@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace JeroenG\Autowire;
 
@@ -9,14 +11,17 @@ use JeroenG\Autowire\Attribute\Tag as TagAttribute;
 
 final class CacheBuilder
 {
-    private function __construct() {}
+    private function __construct()
+    {
+    }
 
     public static function factory(): self
     {
         return new self();
     }
 
-    public function build(): array {
+    public function build(): array
+    {
         $crawler = Crawler::in(config('autowire.directories'));
         $autowireAttribute = config('autowire.autowire_attribute', AutowireAttribute::class);
         $configureAttribute = config('autowire.configure_attribute', ConfigureAttribute::class);
@@ -24,9 +29,9 @@ final class CacheBuilder
         $tagAttribute = config('autowire.tag_attribute', TagAttribute::class);
         $electrician = new Electrician($crawler, $autowireAttribute, $configureAttribute, $listenAttribute, $tagAttribute);
 
-        $autowires = $crawler->filter(fn(string $name) => $electrician->canAutowire($name))->classNames();
-        $listeners = $crawler->filter(fn(string $name) => $electrician->canListen($name))->classNames();
-        $configures = $crawler->filter(fn(string $name) => $electrician->canConfigure($name))->classNames();
+        $autowires = $crawler->filter(fn (string $name) => $electrician->canAutowire($name))->classNames();
+        $listeners = $crawler->filter(fn (string $name) => $electrician->canListen($name))->classNames();
+        $configures = $crawler->filter(fn (string $name) => $electrician->canConfigure($name))->classNames();
         $taggables = $crawler->filter(fn (string $name) => $electrician->canTag($name))->classNames();
 
         $autowireCache = [];

@@ -10,5 +10,4 @@ use JeroenG\Autowire\Tests\Support\Attributes\CustomListen;
 #[CustomListen(MoonClass::class)]
 class CustomListener
 {
-
 }

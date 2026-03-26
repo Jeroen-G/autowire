@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace JeroenG\Autowire;
 
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\File;
@@ -12,7 +13,6 @@ use JeroenG\Autowire\Console\AutowireCacheCommand;
 use JeroenG\Autowire\Console\AutowireClearCommand;
 use JeroenG\Autowire\Testing\CachedState;
 use JsonException;
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
 
 class AutowireServiceProvider extends ServiceProvider
 {

@@ -6,11 +6,11 @@ namespace JeroenG\Autowire\Tests\Support;
 
 final class SubjectDirectory
 {
-    public const ALL = __DIR__.'/Subject';
+    public const ALL = __DIR__ . '/Subject';
 
-    public const CONTRACTS = __DIR__.'/Subject/Contracts';
+    public const CONTRACTS = __DIR__ . '/Subject/Contracts';
 
-    public const DOMAIN = __DIR__.'/Subject/Domain';
+    public const DOMAIN = __DIR__ . '/Subject/Domain';
 
-    public const GREETINGS = __DIR__.'/Subject/Domain/Greeting';
+    public const GREETINGS = __DIR__ . '/Subject/Domain/Greeting';
 }

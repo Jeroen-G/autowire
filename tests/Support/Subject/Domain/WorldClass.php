@@ -8,9 +8,9 @@ use JeroenG\Autowire\Tests\Support\Subject\Contracts\GoodafternoonInterface;
 use JeroenG\Autowire\Tests\Support\Subject\Contracts\GoodeveningInterface;
 use JeroenG\Autowire\Tests\Support\Subject\Contracts\HelloInterface;
 
-class WorldClass implements 
-    GoodafternoonInterface, 
-    GoodeveningInterface, 
+class WorldClass implements
+    GoodafternoonInterface,
+    GoodeveningInterface,
     HelloInterface
 {
     public function goodafternoon(): string

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace JeroenG\Autowire\Console;
 
@@ -19,7 +21,7 @@ class AutowireCacheCommand extends Command
 
         File::put(
             App::bootstrapPath('cache/autowire.php'),
-            '<?php return '.var_export($cache, true).';'.PHP_EOL
+            '<?php return ' . var_export($cache, true) . ';' . PHP_EOL
         );
 
         $this->info('Autowire cache created!');

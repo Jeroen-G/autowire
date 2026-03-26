@@ -19,14 +19,14 @@ final class Crawler
     public static function in(array $directories): Crawler
     {
         $names = (new Collection($directories))
-            ->map(fn(string $directory) => Constructs::fromDirectory($directory))
+            ->map(fn (string $directory) => Constructs::fromDirectory($directory))
             ->flatten()
             ->filter(function ($construct): bool {
                 $r = new ReflectionClass($construct->name());
                 
                 return $r->isInterface() || (!$r->isAbstract() && !$r->isTrait());
             })
-            ->map(fn($construct) => $construct->name());
+            ->map(fn ($construct) => $construct->name());
 
         return new Crawler($names->toArray());
     }
