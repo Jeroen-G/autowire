@@ -197,6 +197,18 @@ It is possible to use custom Attribute classes for either or both the autowiring
 - Add a `autowire_attribute`, `configure_attribute`, `tag_attribute` or `listen_attribute` setting to the `config/autowire.php` file, containing the fully-namespaced name of your custom attribute class.
 - Use your custom attribute to mark the interface or class you want to autowire or configure.
 
+## Speeding up tests
+
+To avoid tests crawling your codebase for autowiring attributes, and thus slowing them down, you can use the `WithCachedAutowire` trait.
+This will make sure autowire will only crawl once for the whole run of the tests.
+
+```php
+abstract class TestCase extends BaseTestCase
+{
+    use WithCachedAutowire;
+}
+```
+
 ## Changelog
 
 Please see the [changelog](changelog.md) for more information on what has changed recently.
