@@ -279,7 +279,7 @@ final class ElectricianTest extends TestCase
         new Electrician(crawler: $crawler, listenAttribute: $invalidAttribute);
     }
 
-    public function invalidAttributeProvider(): Generator
+    public static function invalidAttributeProvider(): Generator
     {
         yield 'This is text, what are you doing?' => [
             'Hello, World!',
