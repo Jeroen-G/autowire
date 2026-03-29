@@ -4,19 +4,13 @@ declare(strict_types=1);
 
 namespace JeroenG\Autowire;
 
-use App\Console\Commands\Bot\SendEndOfWeekUpdate;
-use App\Domain\Bot\AlarmBellInterface;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\ServiceProvider;
-use JeroenG\Autowire\Attribute\Tag as TagAttribute;
-use JeroenG\Autowire\Attribute\Autowire as AutowireAttribute;
-use JeroenG\Autowire\Attribute\Configure as ConfigureAttribute;
-use JeroenG\Autowire\Attribute\Listen as ListenAttribute;
 use JeroenG\Autowire\Console\AutowireCacheCommand;
 use JeroenG\Autowire\Console\AutowireClearCommand;
-use JeroenG\Autowire\TaggedInterface;
+use JeroenG\Autowire\Testing\CachedState;
 use JsonException;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 
@@ -33,11 +27,18 @@ class AutowireServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/autowire.php', 'autowire');
 
+        if (CachedState::$cachedAutowire !== null) {
+            $this->loadFromCache(CachedState::$cachedAutowire);
+
+            return;
+        }
+
         try {
             $cache = File::getRequire(App::bootstrapPath('cache/autowire.php'));
             $this->loadFromCache($cache);
         } catch (FileNotFoundException|JsonException) {
-            $this->crawlAndLoad();
+            $cache = CacheBuilder::factory()->build();
+            $this->loadFromCache($cache);
         }
     }
 
@@ -78,49 +79,9 @@ class AutowireServiceProvider extends ServiceProvider
             $this->define($implementation, $definition);
         }
 
-        array_walk($tagCache, function (TaggedInterface $taggedInterface): void {$this->app->tag($taggedInterface->implementations, $taggedInterface->tag);});
-    }
-
-    private function crawlAndLoad(): void
-    {
-        $crawler = Crawler::in(config('autowire.directories'));
-        $autowireAttribute = config('autowire.autowire_attribute', AutowireAttribute::class);
-        $configureAttribute = config('autowire.configure_attribute', ConfigureAttribute::class);
-        $listenAttribute = config('autowire.listen_attribute', ListenAttribute::class);
-        $tagAttribute = config('autowire.tag_attribute', TagAttribute::class);
-        $electrician = new Electrician($crawler, $autowireAttribute, $configureAttribute, $listenAttribute, $tagAttribute,);
-
-        $wires = $crawler->filter(fn (string $name) => $electrician->canAutowire($name))->classNames();
-        $listeners = $crawler->filter(fn (string $name) => $electrician->canListen($name))->classNames();
-        $configures = $crawler->filter(fn (string $name) => $electrician->canConfigure($name))->classNames();
-        $taggables = $crawler->filter(fn (string $name) => $electrician->canTag($name))->classNames();
-
-        foreach ($wires as $interface) {
-            $wire = $electrician->connect($interface);
-            $this->app->bindIf($wire->interface, $wire->implementation);
-        }
-
-        foreach ($listeners as $listener) {
-            $events = $electrician->events($listener);
-
-            Event::listen($events, $listener);
-        }
-
-        foreach ($configures as $implementation) {
-            $configuration = $electrician->configure($implementation);
-
-            foreach ($configuration->definitions as $definition) {
-                $this->define($implementation, $definition);
-            }
-        }
-
-        array_walk(
-            $taggables,
-            function (string $interface) use ($electrician): void {
-                $taggedInterface = $electrician->tag($interface);
-                $this->app->tag($taggedInterface->implementations, $taggedInterface->tag);
-            },
-        );
+        array_walk($tagCache, function (TaggedInterface $taggedInterface): void {
+            $this->app->tag($taggedInterface->implementations, $taggedInterface->tag);
+        });
     }
 
     private function define(string $implementation, ConfigurationValue $definition): void

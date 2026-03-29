@@ -78,23 +78,4 @@ final class CrawlerTest extends TestCase
 
         self::assertIsList($crawler->classNames());
     }
-
-    public static function assertIsList($actual, $message = ''): void
-    {
-        if (function_exists("array_is_list")) {
-            self::assertTrue(array_is_list($actual), $message);
-        } else {
-            $isList = true;
-            $i = 0;
-
-            foreach ($actual as $key => $_value) {
-                if ($key !== $i++) {
-                    $isList = false;
-                    break;
-                }
-            }
-
-            self::assertTrue($isList, $message);
-        }
-    }
 }
