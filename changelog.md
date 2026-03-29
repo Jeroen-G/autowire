@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+- WithCachedAutowire trait to speed up tests.
+
 ### Removed
 - Removed support for EOL PHP and Laravel versions.
 
