@@ -200,7 +200,7 @@ It is possible to use custom Attribute classes for either or both the autowiring
 ## Speeding up tests
 
 To avoid tests crawling your codebase for autowiring attributes, and thus slowing them down, you can use the `WithCachedAutowire` trait.
-This will make sure autowire will only crawl once for the whole run of the tests.
+This will make sure Autowire will only crawl once for the whole run of the tests.
 
 ```php
 abstract class TestCase extends BaseTestCase

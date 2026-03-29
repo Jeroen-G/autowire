@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - WithCachedAutowire trait to speed up tests.
 - Support Laravel 13.
+- Laravel Boost skill.
 
 ### Removed
 - Removed support for EOL PHP and Laravel versions.
