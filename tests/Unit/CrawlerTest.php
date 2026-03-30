@@ -53,7 +53,7 @@ final class CrawlerTest extends TestCase
     public function test_it_can_filter(): void
     {
         $crawler = Crawler::in([SubjectDirectory::ALL])
-            ->filter(fn(string $class) => !str_contains($class, 'Greeting'));
+            ->filter(fn (string $class) => !str_contains($class, 'Greeting'));
 
         $expected = [
             GoodafternoonInterface::class,
@@ -74,7 +74,7 @@ final class CrawlerTest extends TestCase
     public function test_classnames_are_returned_as_list(): void
     {
         $crawler = Crawler::in([SubjectDirectory::ALL])
-            ->filter(fn(string $class) => !str_contains($class, 'Greeting'));
+            ->filter(fn (string $class) => !str_contains($class, 'Greeting'));
 
         self::assertIsList($crawler->classNames());
     }

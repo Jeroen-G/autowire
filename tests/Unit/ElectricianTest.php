@@ -5,20 +5,20 @@ declare(strict_types=1);
 namespace JeroenG\Autowire\Tests\Unit;
 
 use Generator;
-use JeroenG\Autowire\Attribute\Tag;
 use JeroenG\Autowire\Attribute\Autowire;
 use JeroenG\Autowire\Attribute\Configure;
 use JeroenG\Autowire\Attribute\Listen;
+use JeroenG\Autowire\Attribute\Tag;
 use JeroenG\Autowire\ConfigurationType;
 use JeroenG\Autowire\ConfigurationValue;
 use JeroenG\Autowire\Crawler;
 use JeroenG\Autowire\Electrician;
 use JeroenG\Autowire\Exception\FaultyWiringException;
 use JeroenG\Autowire\Exception\InvalidAttributeException;
-use JeroenG\Autowire\Tests\Support\Attributes\CustomTag;
 use JeroenG\Autowire\Tests\Support\Attributes\CustomAutowire;
 use JeroenG\Autowire\Tests\Support\Attributes\CustomConfigure;
 use JeroenG\Autowire\Tests\Support\Attributes\CustomListen;
+use JeroenG\Autowire\Tests\Support\Attributes\CustomTag;
 use JeroenG\Autowire\Tests\Support\Attributes\EmptyClass;
 use JeroenG\Autowire\Tests\Support\Attributes\NotAnAttribute;
 use JeroenG\Autowire\Tests\Support\Attributes\WrongAttribute;
@@ -92,22 +92,22 @@ final class ElectricianTest extends TestCase
         self::assertEqualsCanonicalizing([MarsClass::class, WorldClass::class], $taggedInterface->implementations);
     }
 
-//    public function test_it_can_get_configured_tags(): void
-//    {
-//        $crawler = Crawler::in([SubjectDirectory::ALL]);
-//        $electrician = new Electrician($crawler);
-//
-//        $taggedInterface = $electrician->tag(GoodeveningInterface::class);
-//
-//        self::assertEquals('#evening', $taggedInterface->tag);
-//
-//        $configuration = $electrician->configure($class);
-//
-//        $expected = [new ConfigurationValue('$greeting', $value, $type)];
-//
-//        self::assertEquals($class, $configuration->implementation);
-//        self::assertEquals($expected, $configuration->definitions);
-//    }
+    //    public function test_it_can_get_configured_tags(): void
+    //    {
+    //        $crawler = Crawler::in([SubjectDirectory::ALL]);
+    //        $electrician = new Electrician($crawler);
+    //
+    //        $taggedInterface = $electrician->tag(GoodeveningInterface::class);
+    //
+    //        self::assertEquals('#evening', $taggedInterface->tag);
+    //
+    //        $configuration = $electrician->configure($class);
+    //
+    //        $expected = [new ConfigurationValue('$greeting', $value, $type)];
+    //
+    //        self::assertEquals($class, $configuration->implementation);
+    //        self::assertEquals($expected, $configuration->definitions);
+    //    }
 
     public function test_it_can_connect_implementation(): void
     {
@@ -126,7 +126,7 @@ final class ElectricianTest extends TestCase
         $electrician = new Electrician($crawler);
 
         $this->expectException(FaultyWiringException::class);
-        $this->expectExceptionMessage('No implementation found for '.GoodbyeInterface::class);
+        $this->expectExceptionMessage('No implementation found for ' . GoodbyeInterface::class);
         $electrician->connect(GoodbyeInterface::class);
     }
 
@@ -135,8 +135,7 @@ final class ElectricianTest extends TestCase
         string $class,
         string $value,
         string $type,
-    ): void
-    {
+    ): void {
         $crawler = Crawler::in([SubjectDirectory::GREETINGS]);
         $electrician = new Electrician($crawler);
 
@@ -181,7 +180,7 @@ final class ElectricianTest extends TestCase
         $electrician = new Electrician($crawler);
 
         $this->expectException(FaultyWiringException::class);
-        $this->expectExceptionMessage('No JeroenG\Autowire\Attribute\Configure found in '.GoodbyeInterface::class);
+        $this->expectExceptionMessage('No JeroenG\Autowire\Attribute\Configure found in ' . GoodbyeInterface::class);
         $electrician->configure(GoodbyeInterface::class);
     }
 
@@ -191,7 +190,7 @@ final class ElectricianTest extends TestCase
         $electrician = new Electrician($crawler);
 
         $this->expectException(FaultyWiringException::class);
-        $this->expectExceptionMessage('No JeroenG\Autowire\Attribute\Tag found in '.GoodbyeInterface::class);
+        $this->expectExceptionMessage('No JeroenG\Autowire\Attribute\Tag found in ' . GoodbyeInterface::class);
         $electrician->tag(GoodbyeInterface::class);
     }
 

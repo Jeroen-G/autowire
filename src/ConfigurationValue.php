@@ -10,6 +10,6 @@ final class ConfigurationValue
         public string $need,
         public mixed $give,
         public string $type,
-    ){
+    ) {
     }
 }

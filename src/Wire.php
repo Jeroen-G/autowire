@@ -9,6 +9,6 @@ final class Wire
     public function __construct(
         public string $interface,
         public string $implementation
-    ){
+    ) {
     }
 }

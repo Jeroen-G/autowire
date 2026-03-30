@@ -7,10 +7,10 @@ namespace JeroenG\Autowire\Tests\Support\Subject\Domain;
 use JeroenG\Autowire\Tests\Support\Subject\Contracts\GoodeveningInterface;
 use JeroenG\Autowire\Tests\Support\Subject\Contracts\GoodmorningInterface;
 
-class MarsClass implements 
+class MarsClass implements
     GoodeveningInterface,
     GoodmorningInterface
-{        
+{
     public function goodevening(): string
     {
         return 'good evening';

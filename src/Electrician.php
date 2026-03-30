@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace JeroenG\Autowire;
 
 use Attribute;
-use JeroenG\Autowire\Attribute\Tag as TagAttribute;
 use JeroenG\Autowire\Attribute\Autowire as AutowireAttribute;
-use JeroenG\Autowire\Attribute\TagInterface as TagAttributeInterface;
 use JeroenG\Autowire\Attribute\AutowireInterface as AutowireAttributeInterface;
-use JeroenG\Autowire\Attribute\Listen;
-use JeroenG\Autowire\Attribute\Listen as ListenAttribute;
 use JeroenG\Autowire\Attribute\Configure as ConfigureAttribute;
 use JeroenG\Autowire\Attribute\ConfigureInterface as ConfigureAttributeInterface;
+use JeroenG\Autowire\Attribute\Listen;
+use JeroenG\Autowire\Attribute\Listen as ListenAttribute;
 use JeroenG\Autowire\Attribute\ListenInterface as ListenAttributeInterface;
+use JeroenG\Autowire\Attribute\Tag as TagAttribute;
+use JeroenG\Autowire\Attribute\TagInterface as TagAttributeInterface;
 use JeroenG\Autowire\Exception\FaultyWiringException;
 use JeroenG\Autowire\Exception\InvalidAttributeException;
 use ReflectionAttribute;
@@ -32,8 +32,7 @@ final class Electrician
         private string $configureAttribute = ConfigureAttribute::class,
         private string $listenAttribute = ListenAttribute::class,
         private string $tagAttribute = TagAttribute::class,
-    )
-    {
+    ) {
         self::checkValidAttributeImplementation($this->autowireAttribute, AutowireAttributeInterface::class);
         self::checkValidAttributeImplementation($this->configureAttribute, ConfigureAttributeInterface::class);
         self::checkValidAttributeImplementation($this->listenAttribute, ListenAttributeInterface::class);
@@ -147,7 +146,7 @@ final class Electrician
     /** @throws InvalidAttributeException */
     private static function checkValidAttributeImplementation(string $className, string $attributeInterface): void
     {
-        if (! class_exists($className)) {
+        if (!class_exists($className)) {
             throw InvalidAttributeException::doesNotExist($className);
         }
 
@@ -156,7 +155,7 @@ final class Electrician
             throw InvalidAttributeException::isNotAnAttribute($className);
         }
 
-        if (! is_a($className, $attributeInterface, true)) {
+        if (!is_a($className, $attributeInterface, true)) {
             throw InvalidAttributeException::doesNotImplementInterface($className, $attributeInterface);
         }
     }
