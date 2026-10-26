@@ -51,7 +51,8 @@ final class CacheBuilder
             $configuration = $electrician->configure($implementation);
 
             foreach ($configuration->definitions as $definition) {
-                $configureCache[$implementation] = [
+                $configureCache[] = [
+                    'implementation' => $implementation,
                     'type' => $definition->type,
                     'need' => $definition->need,
                     'give' => $definition->give,
