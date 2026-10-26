@@ -69,14 +69,14 @@ class AutowireServiceProvider extends ServiceProvider
             Event::listen($events, $listener);
         }
 
-        foreach ($configureCache as $implementation => $details) {
+        foreach ($configureCache as $details) {
             $definition = new ConfigurationValue(
                 need: $details['need'],
                 give: $details['give'],
                 type: $details['type'],
             );
 
-            $this->define($implementation, $definition);
+            $this->define($details['implementation'], $definition);
         }
 
         array_walk($tagCache, function (TaggedInterface $taggedInterface): void {

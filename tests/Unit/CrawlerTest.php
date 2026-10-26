@@ -15,6 +15,7 @@ use JeroenG\Autowire\Tests\Support\Subject\Domain\CustomListener;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\ClassGreeting;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\ConfigGreeting;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\CustomGreeting;
+use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\MultipleConfigGreeting;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\TagGreeting;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\TextGreeting;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\MarsClass;
@@ -40,6 +41,7 @@ final class CrawlerTest extends TestCase
             ClassGreeting::class,
             ConfigGreeting::class,
             CustomGreeting::class,
+            MultipleConfigGreeting::class,
             TagGreeting::class,
             TextGreeting::class,
             MarsClass::class,

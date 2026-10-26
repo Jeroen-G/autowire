@@ -32,6 +32,7 @@ use JeroenG\Autowire\Tests\Support\Subject\Domain\CustomListener;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\ClassGreeting;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\ConfigGreeting;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\CustomGreeting;
+use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\MultipleConfigGreeting;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\TagGreeting;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\Greeting\TextGreeting;
 use JeroenG\Autowire\Tests\Support\Subject\Domain\MarsClass;
@@ -144,6 +145,24 @@ final class ElectricianTest extends TestCase
         $expected = [new ConfigurationValue('$greeting', $value, $type)];
 
         self::assertEquals($class, $configuration->implementation);
+        self::assertEquals($expected, $configuration->definitions);
+    }
+
+    public function test_it_can_configure_implementation_with_multiple_values(): void
+    {
+        $crawler = Crawler::in([SubjectDirectory::GREETINGS]);
+        $electrician = new Electrician($crawler);
+
+        $configuration = $electrician->configure(MultipleConfigGreeting::class);
+
+        $expected = [
+            new ConfigurationValue('$greeting', 'greeting.hi', ConfigurationType::CONFIG),
+            new ConfigurationValue('$logger', 'Psr\Log\LoggerInterface', ConfigurationType::SERVICE),
+            new ConfigurationValue('$handlers', 'handlers', ConfigurationType::TAGGED),
+            new ConfigurationValue('$count', '5', ConfigurationType::UNKNOWN),
+        ];
+
+        self::assertEquals(MultipleConfigGreeting::class, $configuration->implementation);
         self::assertEquals($expected, $configuration->definitions);
     }
 
